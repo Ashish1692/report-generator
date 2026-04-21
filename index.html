@@ -12,27 +12,23 @@
 </head>
 
 <body>
-
-    <header class="app-header">
-        <div class="app-logo">
-            <div class="app-logo-icon">⚡</div>
-            <div>
-                <div class="app-logo-text">Report Generator <span class="app-logo-sub">| v3.0</span></div>
-            </div>
-        </div>
-    </header>
-
     <div class="app-body">
 
         <aside class="sidebar">
+            <div class="app-header app-logo">
+                <div class="app-logo-icon">⚡</div>
+                <div>
+                    <div class="app-logo-text">Report Generator <span class="app-logo-sub">| v3.0</span></div>
+                </div>
+            </div>
             <div class="sidebar-inner">
 
-                <div style="display:flex;flex-direction:column;gap:6px;">
+                <!-- <div style="display:flex;flex-direction:column;gap:6px;">
                     <button class="btn-gen primary" id="btn-gen" disabled onclick="generate()">
                         <div class="spinner"></div>
                         <span class="btn-label" id="btn-label">⚡ Generate Document</span>
                     </button>
-                </div>
+                </div> -->
 
                 <div>
                     <div
@@ -162,6 +158,12 @@
                 <button class="tab-btn" data-tab="json" onclick="switchTab('json')">JSON</button>
                 <button class="tab-btn" data-tab="guide" onclick="switchTab('guide')">Schema Guide</button>
                 <div style="flex:1;"></div>
+                  <div>
+                    <button class="btn-gen primary" id="btn-gen" disabled onclick="generate()">
+                        <div class="spinner"></div>
+                        <span class="btn-label" id="btn-label">⚡ Generate Document</span>
+                    </button>
+                </div>
                 <button class="btn-pdf" id="btn-pdf" disabled onclick="generatePdf()" title="Download PDF">⬇
                     PDF</button>
             </div>

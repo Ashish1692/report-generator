@@ -23,13 +23,20 @@
     padding: 0;
 }
 
+html,
 body {
+    height: 100%;
+    overflow: hidden;
+    /* Stops page-level scrolling */
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
     font-family: 'DM Sans', sans-serif;
     background: var(--bg);
     color: var(--gray);
     min-height: 100vh;
     display: flex;
-    flex-direction: column;
 }
 
 /* ── Header ── */
@@ -46,6 +53,7 @@ body {
 .app-logo {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
     gap: 10px;
 }
 
@@ -88,6 +96,7 @@ body {
     flex: 1;
     min-height: 0;
     overflow: hidden;
+    flex-grow: 1;
 }
 
 /* ── Sidebar ── */
@@ -317,20 +326,19 @@ body {
 }
 
 .btn-gen {
-    width: 100%;
-    padding: 12px 16px;
-    border: none;
-    border-radius: var(--radius);
+    padding: 0 14px;
+    height: 30px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
     font-family: inherit;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
+    color: #f9f9fa;
+    background: #102e64;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
+    margin: auto 10px;
     transition: all 0.15s;
-    letter-spacing: 0.01em;
+    white-space: nowrap;
 }
 
 .btn-gen:disabled {
@@ -339,12 +347,12 @@ body {
 }
 
 .btn-gen.primary {
-    background: #0e00ff;
+    background: #102e64;
     color: #fff;
 }
 
 .btn-gen.primary:not(:disabled):hover {
-    background: var(--blue);
+    background: #0241b6;
 }
 
 .btn-gen.loading {
@@ -399,6 +407,8 @@ body {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    height: 100%;
+    flex-grow: 1;
 }
 
 /* ── Tabs ── */
@@ -407,21 +417,21 @@ body {
     align-items: center;
     padding: 0 24px;
     border-bottom: 1px solid var(--border);
-    background: var(--surface);
+    background: #0c1d3c;
     gap: 0;
-    height: 44px;
+    height: 57px;
     flex-shrink: 0;
 }
 
 .tab-btn {
     padding: 0 16px;
-    height: 44px;
+    height: 57px;
     border: none;
     background: transparent;
     font-family: inherit;
     font-size: 13px;
     font-weight: 500;
-    color: #64748B;
+    color: #ebebeb;
     cursor: pointer;
     border-bottom: 2px solid transparent;
     margin-bottom: -1px;
@@ -429,13 +439,14 @@ body {
 }
 
 .tab-btn.active {
-    color: var(--navy);
-    border-bottom-color: var(--navy);
+    color: #5f97ff;
+    border-bottom-color: #4b89fd;
+    border-bottom-width: 4px;
     font-weight: 600;
 }
 
 .tab-btn:hover:not(.active) {
-    color: var(--gray);
+    color: #a0cffa;
 }
 
 /* ── Tab Panels ── */
@@ -443,6 +454,9 @@ body {
     flex: 1;
     overflow-y: auto;
     padding: 24px;
+    flex-grow: 1;
+    height: 0;
+    background: #0c1d3c;
 }
 
 .tab-panel {
@@ -845,8 +859,8 @@ body {
     font-family: inherit;
     font-size: 12px;
     font-weight: 600;
-    color: #64748B;
-    background: transparent;
+    color: #e0e0e0;
+    background: #ff4d4d;
     cursor: pointer;
     margin: auto 0;
     transition: all 0.15s;
@@ -854,8 +868,8 @@ body {
 }
 
 .btn-pdf:not(:disabled):hover {
-    background: var(--lgray);
-    color: var(--navy);
+    background: rgb(194, 0, 0);
+    color: #e0e0e0;
 }
 
 .btn-pdf:disabled {
