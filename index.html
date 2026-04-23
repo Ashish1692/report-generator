@@ -33,8 +33,8 @@
                 <div>
                     <div
                         style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; align-items: end;">
-                        <div class="section-label" style="margin-bottom:0;">1. Select type</div>
-                        <div class="section-label" style="margin-bottom:0;">2. Redirect to AI</div>
+                        <div class="section-label" style="margin-bottom:0;">Select type</div>
+                        <div class="section-label" style="margin-bottom:0;">Redirect to AI</div>
                     </div>
 
                     <div id="gem-links"
@@ -114,7 +114,7 @@
                         <button class="btn-clear" onclick="clearAll()">Clear</button>
                     </div>
                     <textarea class="json-input" id="json-ta" placeholder='{ "meta": { "account": "..." }, ... }'
-                        oninput="handlePaste()"></textarea>
+                        oninput="handlePaste()">{ "meta": { "account": "Client Name", "call_type": "Weekly Sync", "call_date": "April 10, 2026", "pm": "Your Name", "presenter": "Program Manager", "audience": "Client Stakeholders" }, "topics": [ { "title": "Topic Title", "say_this": "Script language to speak out loud...", "technical_notes": "For your eyes only...", "tasks": [ { "num": "TASK001", "type": "Story", "assignee": "Dev Name", "title": "Task description", "state": "In Progress" } ], "qa_pairs": [ { "question": "Question they might ask", "answer": "Your answer" } ] } ], "closing_statement": "Thank you for your time..." }</textarea>
                     <div id="json-err" style="font-size:11px;color:#EF4444;margin-top:4px;display:none;"></div>
                 </div>
 
@@ -154,11 +154,11 @@
 
             <div class="tab-bar">
                 <button class="tab-btn active" data-tab="preview" onclick="switchTab('preview')">Preview</button>
-                <button class="tab-btn" data-tab="edit" onclick="switchTab('edit')">✏ Edit</button>
+                <button class="tab-btn" data-tab="edit" onclick="switchTab('edit')">✏️ Edit</button>
                 <button class="tab-btn" data-tab="json" onclick="switchTab('json')">JSON</button>
                 <button class="tab-btn" data-tab="guide" onclick="switchTab('guide')">Schema Guide</button>
                 <div style="flex:1;"></div>
-                  <div>
+                <div>
                     <button class="btn-gen primary" id="btn-gen" disabled onclick="generate()">
                         <div class="spinner"></div>
                         <span class="btn-label" id="btn-label">⚡ Generate Document</span>
@@ -200,12 +200,12 @@
 
                 <div class="tab-panel" id="panel-json">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-                        <div style="font-size:13px;font-weight:700;color:var(--navy);">JSON Data</div>
+                        <div style="font-size:13px;font-weight:700;color:var(--lgray);">JSON Data</div>
                         <button class="btn-edit-act" id="btn-copy-json" onclick="copyJsonToClipboard()"
                             style="display:none;">📋 Copy JSON</button>
                     </div>
                     <div class="json-view" id="json-view">
-                        <div class="json-empty">No JSON loaded yet.</div>
+                        <div class="json-empty" style="color: var(--lgray);">No JSON loaded yet.</div>
                     </div>
                 </div>
 
@@ -215,26 +215,29 @@
                         <div class="empty-state-title">No document loaded</div>
                         <div class="empty-state-sub">Load a JSON file first to edit its fields</div>
                     </div>
-                    <div id="edit-content" style="display:none;max-width:760px;">
-                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-                            <div style="font-size:13px;font-weight:700;color:var(--navy);">Edit Document Fields</div>
+
+                    <div id="edit-content" style="display:none;">
+                        <div
+                            style="display:flex; align-items:center; justify-content:space-between; background-color: #0a172f;">
+                            <div style="font-size:13px;font-weight:700;color:var(--lgray, #cbd5e1);">Edit Document
+                                Fields</div>
                             <div style="display:flex;gap:8px;">
                                 <button class="btn-edit-act" onclick="applyEdits()">✓ Apply Changes</button>
                                 <button class="btn-edit-act secondary" onclick="resetEdits()">↺ Reset</button>
                             </div>
                         </div>
-                        <div id="edit-fields"></div>
+                        <div id="edit-fields" style="width: 100%; margin-top: 10px;"></div>
                     </div>
                 </div>
 
                 <div class="tab-panel" id="panel-guide">
-                    <div style="max-width:700px;">
-                        <h2 style="font-size:16px;font-weight:700;color:var(--navy);margin-bottom:16px;">JSON Schema
+                    <div style="max-width:90vw;">
+                        <h2 style="font-size:16px;font-weight:700;color:var(--lgray);margin-bottom:16px;">JSON Schema
                             Reference</h2>
-
                         <div style="margin-bottom:24px;">
-                            <div class="doc-section-title">Call Script</div>
-                            <div class="doc-text">Required from your AI extractor. Produces the formatted call guide
+                            <div class="white-section-title">Call Script</div>
+                            <div class="white-text">Required from your AI extractor. Produces the formatted call
+                                guide
                                 with SAY THIS blocks, Q&A tables, and task lists.</div>
                             <div class="format-hint">{
                                 "meta": {
@@ -264,7 +267,7 @@
                         </div>
 
                         <div style="margin-bottom:24px;">
-                            <div class="doc-section-title">Status Report</div>
+                            <div class="white-section-title">Status Report</div>
                             <div class="format-hint">{
                                 "meta": { "account": "...", "week_of": "...", "pm": "...", "org": "..." },
                                 "executive_summary": "Week summary text...",
@@ -273,22 +276,25 @@
                                 "focus_item": { "title": "Item Title", "body": "Description..." },
                                 "incidents": [ { "num": "INC001", "title": "...", "assignee": "...", "state": "...",
                                 "priority": "...", "note": "..." } ],
-                                "stories": [ { "num": "STRY001", "title": "...", "assignee": "...", "priority": "...",
+                                "stories": [ { "num": "STRY001", "title": "...", "assignee": "...", "priority":
+                                "...",
                                 "state": "...", "phase": "WIP" } ],
                                 "uat_backlog": [ "Item 1", "Item 2" ],
                                 "process_note": "Any process updates...",
                                 "blockers": [ { "blocker": "...", "impact": "...", "resolution": "..." } ],
-                                "action_items": [ { "owner": "...", "action": "...", "item": "TASK#", "due": "Date" } ],
+                                "action_items": [ { "owner": "...", "action": "...", "item": "TASK#", "due": "Date"
+                                } ],
                                 "team": [ { "name": "...", "role": "...", "focus": "..." } ]
                                 }</div>
                         </div>
 
                         <div>
-                            <div class="doc-section-title">RCA</div>
+                            <div class="white-section-title">RCA</div>
                             <div class="format-hint">{
                                 "incident": "INC0012345",
                                 "account": "Client Name",
-                                "summary": { "title": "...", "date_reported": "...", "date_resolved": "...", "severity":
+                                "summary": { "title": "...", "date_reported": "...", "date_resolved": "...",
+                                "severity":
                                 "...", "affected_system": "...", "reported_by": "...", "resolved_by": "...",
                                 "root_cause_category": "...", "downtime": "...", "impact_summary": "..." },
                                 "s1": "Incident overview text...",
@@ -301,7 +307,8 @@
                                 "s8": ["Follow-up 1"],
                                 "s10": "Document notes and distribution...",
                                 "timeline": [
-                                { "time": "10:00 AM", "event": "Alert triggered", "actor": "System", "type": "Detection"
+                                { "time": "10:00 AM", "event": "Alert triggered", "actor": "System", "type":
+                                "Detection"
                                 }
                                 ],
                                 "callout_boxes": [
