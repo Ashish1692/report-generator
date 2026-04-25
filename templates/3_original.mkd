@@ -1,5 +1,117 @@
 Below are the **JSON structures + JavaScript DOCX generators** for templates **1, 2, 10, 8, 7** (matching your reference style: tables, headings, colored statuses, returns `{ blob, filename }`).
 
+> Assumptions (same as your reference):
+- You already have: `getDocx()`, `docxColors()`, `safeStr()` available globally.
+- You’re generating DOCX using the `docx` library (`Document`, `Packer`, `Paragraph`, `Table`, etc.)
+
+---
+
+# Shared helper (use across all templates)
+
+```js
+function makeDocHelpers() {
+  const {
+    Paragraph, TextRun, TableCell,
+    AlignmentType, BorderStyle, WidthType, ShadingType
+  } = getDocx();
+  const C = docxColors();
+
+  const bdr = { style: BorderStyle.SINGLE, size: 1, color: C.MGRAY };
+  const borders = { top: bdr, bottom: bdr, left: bdr, right: bdr };
+
+  function para(t, bold, color, size, font) {
+    return new Paragraph({
+      spacing: { before: 60, after: 60 },
+      children: [new TextRun({
+        text: safeStr(t),
+        bold: !!bold,
+        color: color || C.GRAY,
+        size: size || 20,
+        font: font || "Arial"
+      })]
+    });
+  }
+
+  function h1(t) {
+    return new Paragraph({
+      spacing: { before: 120, after: 120 },
+      children: [new TextRun({ text: safeStr(t), bold: true, color: C.NAVY, size: 32, font: "Arial" })]
+    });
+  }
+
+  function h2(t) {
+    return new Paragraph({
+      spacing: { before: 240, after: 120 },
+      children: [new TextRun({ text: safeStr(t), bold: true, color: C.BLUE, size: 28, font: "Arial" })]
+    });
+  }
+
+  function bullets(arr) {
+    const items = Array.isArray(arr) ? arr : [];
+    return items
+      .map(x => safeStr(x).trim())
+      .filter(Boolean)
+      .map(x => new Paragraph({
+        spacing: { before: 20, after: 20 },
+        bullet: { level: 0 },
+        children: [new TextRun({ text: x, color: C.GRAY, size: 20, font: "Arial" })]
+      }));
+  }
+
+  function hdrCell(t, w) {
+    return new TableCell({
+      borders,
+      width: { size: w, type: WidthType.DXA },
+      shading: { fill: C.BLUE, type: ShadingType.CLEAR },
+      margins: { top: 80, bottom: 80, left: 120, right: 120 },
+      children: [new Paragraph({
+        children: [new TextRun({ text: safeStr(t), bold: true, color: C.WHITE, size: 18, font: "Arial" })]
+      })]
+    });
+  }
+
+  function dataCell(t, w, bg) {
+    return new TableCell({
+      borders,
+      width: { size: w, type: WidthType.DXA },
+      shading: { fill: bg || C.WHITE, type: ShadingType.CLEAR },
+      margins: { top: 70, bottom: 70, left: 120, right: 120 },
+      children: [new Paragraph({
+        children: [new TextRun({ text: safeStr(t), color: C.GRAY, size: 18, font: "Arial" })]
+      })]
+    });
+  }
+
+  // Used for statuses like: Completed/In Progress/Behind; also works for P1/P2 etc.
+  function statusCell(t, w) {
+    const s = (t || "").toLowerCase();
+    let bg, tc;
+    if (s.includes("completed") || s.includes("done") || s.includes("on track") || s.includes("green")) { bg = C.LIGHT_GREEN; tc = C.GREEN; }
+    else if (s.includes("in progress") || s.includes("pending") || s.includes("amber") || s.includes("yellow")) { bg = C.LIGHT_AMBER; tc = C.AMBER; }
+    else if (s.includes("delayed") || s.includes("behind") || s.includes("red") || s.includes("failed") || s.includes("p1")) { bg = C.LIGHT_AMBER; tc = C.AMBER; }
+    else { bg = C.LIGHT_GRAY; tc = C.GRAY; }
+
+    return new TableCell({
+      borders,
+      width: { size: w, type: WidthType.DXA },
+      shading: { fill: bg, type: ShadingType.CLEAR },
+      margins: { top: 70, bottom: 70, left: 120, right: 120 },
+      children: [new Paragraph({
+        children: [new TextRun({ text: safeStr(t), bold: true, color: tc, size: 18, font: "Arial" })]
+      })]
+    });
+  }
+
+  // For payload samples / scripts
+  function codePara(text) {
+    return para(text || "", false, C.DGRAY || C.GRAY, 18, "Consolas");
+  }
+
+  return { C, para, h1, h2, bullets, hdrCell, dataCell, statusCell, codePara };
+}
+```
+
+---
 
 # Template 1) Incident Resolution Summary (Customer‑Friendly)
 
@@ -714,3 +826,16 @@ async function generateIntegrationSpecification(data) {
   "open_questions": ["Which services are in phase 1?"]
 }
 ```
+
+## JS generator
+If you want, I can paste the full `generateUserStoryTechnicalDesign()` again, but it’s the same one I provided earlier (works with this JSON). Tell me if you want it re-posted in one block.
+
+---
+
+## Next question (so I align with your app UI)
+How are you selecting templates in your app today?
+1) dropdown template name → paste JSON → generate  
+2) form-based UI → generate JSON behind the scenes  
+3) ServiceNow number (INC/CHG/PRB) → auto fetch → generate  
+
+If you tell me which, I’ll give you a **template registry object** (id, name, function, JSON schema, default JSON sample) so these 5 appear cleanly in your app.

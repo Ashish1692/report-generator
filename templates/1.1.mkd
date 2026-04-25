@@ -1,0 +1,254 @@
+Below is the **exact code you need to add** for items **1 → 5** for the three new templates:
+
+- ✅ Major Incident Report → `pir`
+- ✅ Release Notes → `releasenotes`
+- ✅ Weekly Status → `weeklystatus`
+
+You can copy‑paste these directly into your existing files.
+
+---
+
+# ✅ 1️⃣ Add Mode Detection in `loadJSON()`  
+
+Add this inside your existing `loadJSON()` function:
+
+```javascript
+// Detect template mode based on JSON structure
+if (data.incident_number && data.timeline_events) {
+  switchMode('pir');
+}
+else if (data.release_version && data.application) {
+  switchMode('releasenotes');
+}
+else if (data.consultant_name && data.week_ending) {
+  switchMode('weeklystatus');
+}
+```
+
+Place this after parsing `data` and before rendering preview.
+
+---
+
+# ✅ 2️⃣ Add Generation Case in `generate()`  
+
+Inside your existing `generate()` function add:
+
+```javascript
+else if (currentMode === 'pir') {
+  result = await generatePIR(currentData);
+}
+else if (currentMode === 'releasenotes') {
+  result = await generateReleaseNotes(currentData);
+}
+else if (currentMode === 'weeklystatus') {
+  result = await generateWeeklyStatus(currentData);
+}
+```
+
+---
+
+# ✅ 3️⃣ Add Validation in `showValPanel()`  
+
+Add these validation blocks inside your validation logic:
+
+---
+
+### ✅ PIR Validation
+
+```javascript
+else if (currentMode === 'pir') {
+  tiles = [
+    { l: 'Timeline Events', n: (data.timeline_events || []).length },
+    { l: 'Root Cause Items', n: (data.root_cause_analysis || []).length },
+    { l: 'Preventive Actions', n: (data.preventive_actions || []).length }
+  ];
+
+  if (!data.incident_number) {
+    pip = 'warn';
+    msg = 'No incident number found';
+  } else {
+    msgs.push({ type: 'ok', text: 'PIR ready to generate' });
+  }
+}
+```
+
+---
+
+### ✅ Release Notes Validation
+
+```javascript
+else if (currentMode === 'releasenotes') {
+  tiles = [
+    { l: 'Enhancements', n: (data.enhancements || []).length },
+    { l: 'Defect Fixes', n: (data.defect_fixes || []).length },
+    { l: 'Deployment Steps', n: (data.deployment_steps || []).length }
+  ];
+
+  if (!data.release_version) {
+    pip = 'warn';
+    msg = 'No release version found';
+  } else {
+    msgs.push({ type: 'ok', text: 'Release notes ready' });
+  }
+}
+```
+
+---
+
+### ✅ Weekly Status Validation
+
+```javascript
+else if (currentMode === 'weeklystatus') {
+  tiles = [
+    { l: 'Sprint Metrics', n: (data.sprint_metrics || []).length },
+    { l: 'Completed Tickets', n: (data.completed_tickets || []).length },
+    { l: 'Blockers', n: (data.current_blockers || []).length }
+  ];
+
+  if (!data.consultant_name) {
+    pip = 'warn';
+    msg = 'Consultant name missing';
+  } else {
+    msgs.push({ type: 'ok', text: 'Weekly report ready' });
+  }
+}
+```
+
+---
+
+# ✅ 4️⃣ Add Preview Routing in `renderPreview()`  
+(File: `templateFunctions.js`)
+
+Inside your existing `renderPreview()` function add:
+
+```javascript
+else if (currentMode === 'pir') {
+  el.innerHTML = renderPIRPreview(data);
+}
+else if (currentMode === 'releasenotes') {
+  el.innerHTML = renderReleaseNotesPreview(data);
+}
+else if (currentMode === 'weeklystatus') {
+  el.innerHTML = renderWeeklyStatusPreview(data);
+}
+```
+
+---
+
+# ✅ 5️⃣ Add Preview Functions  
+(Add these AFTER your existing preview functions)
+
+---
+
+# ✅ PIR Preview Function
+
+```javascript
+function renderPIRPreview(data) {
+  var html = '';
+
+  html += '<div class="doc-cover">';
+  html += '<div class="doc-cover-title">POST INCIDENT REVIEW</div>';
+  html += '<div class="doc-cover-sub">' + escHtml(data.incident_number || '') + '</div>';
+  html += '<div class="doc-cover-credit">Priority: ' + escHtml(data.priority || '') + '</div>';
+  html += '</div>';
+
+  if (data.short_description) {
+    html += '<div class="doc-text"><strong>Description:</strong> ' +
+      escHtml(data.short_description) + '</div>';
+  }
+
+  if (data.timeline_events?.length) {
+    html += '<div class="doc-section-title">Timeline</div>';
+    html += '<table class="doc-table"><thead><tr><th>Time</th><th>Event</th><th>Description</th></tr></thead><tbody>';
+
+    data.timeline_events.forEach(function(t){
+      html += '<tr><td>' + escHtml(t.time || '') + '</td>' +
+              '<td>' + escHtml(t.event || '') + '</td>' +
+              '<td>' + escHtml(t.description || '') + '</td></tr>';
+    });
+
+    html += '</tbody></table>';
+  }
+
+  return html;
+}
+```
+
+---
+
+# ✅ Release Notes Preview Function
+
+```javascript
+function renderReleaseNotesPreview(data) {
+  var html = '';
+
+  html += '<div class="doc-cover">';
+  html += '<div class="doc-cover-title">RELEASE NOTES</div>';
+  html += '<div class="doc-cover-sub">' + escHtml(data.application || '') + '</div>';
+  html += '<div class="doc-cover-credit">Version: ' + escHtml(data.release_version || '') + '</div>';
+  html += '</div>';
+
+  if (data.enhancements?.length) {
+    html += '<div class="doc-section-title">Enhancements</div>';
+    html += '<table class="doc-table"><thead><tr><th>Feature</th><th>Description</th><th>Impact</th></tr></thead><tbody>';
+
+    data.enhancements.forEach(function(e){
+      html += '<tr><td><strong>' + escHtml(e.feature || '') + '</strong></td>' +
+              '<td>' + escHtml(e.description || '') + '</td>' +
+              '<td>' + escHtml(e.impact || '') + '</td></tr>';
+    });
+
+    html += '</tbody></table>';
+  }
+
+  return html;
+}
+```
+
+---
+
+# ✅ Weekly Status Preview Function
+
+```javascript
+function renderWeeklyStatusPreview(data) {
+  var html = '';
+
+  html += '<div class="doc-cover">';
+  html += '<div class="doc-cover-title">WEEKLY STATUS REPORT</div>';
+  html += '<div class="doc-cover-sub">' + escHtml(data.client_name || '') + '</div>';
+  html += '<div class="doc-cover-credit">Week Ending: ' + escHtml(data.week_ending || '') + '</div>';
+  html += '</div>';
+
+  if (data.sprint_metrics?.length) {
+    html += '<div class="doc-section-title">Sprint Metrics</div>';
+    html += '<table class="doc-table"><thead><tr><th>Metric</th><th>Planned</th><th>Actual</th><th>Status</th></tr></thead><tbody>';
+
+    data.sprint_metrics.forEach(function(m){
+      html += '<tr><td>' + escHtml(m.metric || '') + '</td>' +
+              '<td>' + escHtml(m.planned || '') + '</td>' +
+              '<td>' + escHtml(m.actual || '') + '</td>' +
+              '<td>' + escHtml(m.status || '') + '</td></tr>';
+    });
+
+    html += '</tbody></table>';
+  }
+
+  return html;
+}
+```
+
+---
+
+# ✅ Done
+
+You now have fully wired:
+
+- ✅ Mode detection
+- ✅ Generation routing
+- ✅ Validation tiles
+- ✅ Preview routing
+- ✅ Clean HTML preview functions
+
+---
+
+If you’d like, I can now generate the matching **index.html gem-links buttons** for these 3 templates to keep your UI consistent.
