@@ -1,0 +1,37 @@
+
+```
+Take reference of 2.pdf and 2.2.pdf to create editform form for them, utiilze editForm.pdf to take inspiration
+curretnly my code doesnot have much edit ability for this edit form only few thing i can able to edit, if i directly modify json then it breks, basiclly i want ability to add/modify content via editform option withouth breaking json structure
+```
+
+```
+1.Added mode detection in loadJSON() function
+
+2.Added generation case in generate() function
+
+3.Added validation in showValPanel() function
+
+4.Added preview function in renderPreview() function in templateFunctions.js
+
+5.Add the preview function (add this after the existing preview functions)
+
+similar to above do the same for 2.pdf
+create code for these (1 to 5)
+```
+
+```
+reference - new-template.pdf
+in 1.pdf i have JSON Structure and generate fucntion but bellow funtions are missing i also want them.
+1.Added mode detection in loadJSON() function
+
+2.Added generation case in generate() function
+
+3.Added validation in showValPanel() function
+
+4.Added preview function in renderPreview() function in templateFunctions.js
+
+5.Add the preview function (add this after the existing preview functions)
+
+create code for these (1 to 5)
+```
+
