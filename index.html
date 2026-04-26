@@ -23,47 +23,57 @@
             </div>
             <div class="sidebar-inner">
                 <div>
-                    <div style="margin-bottom: 10px;">
-                        <div class="section-label" style="margin-bottom:0;">Select type</div>
-                    </div>
+                    <div>
+                        <div class="section-label">Document Type</div>
+                        <div class="mode-tabs" style="grid-template-columns:repeat(2,1fr);gap:3px;">
+                            <button class="mode-tab active" data-mode="callscript" onclick="switchMode('callscript')"
+                                title="Call Script">📞 Call Script</button>
+                            <button class="mode-tab" data-mode="report" onclick="switchMode('report')"
+                                title="Status Report">📊 Status Report</button>
+                            <button class="mode-tab" data-mode="rca" onclick="switchMode('rca')"
+                                title="Root Cause Analysis">🔍 RCA</button>
+                            <button class="mode-tab" data-mode="blocker" onclick="switchMode('blocker')"
+                                title="Blocker Brief">🚧 Blocker Brief</button>
+                            <button class="mode-tab" data-mode="techapproach" onclick="switchMode('techapproach')"
+                                title="Technical Approach">⚙ Tech Approach</button>
+                            <button class="mode-tab" data-mode="taskbrief" onclick="switchMode('taskbrief')"
+                                title="Task Brief">📋 Task Brief</button>
+                            <button class="mode-tab" data-mode="projectsummary" onclick="switchMode('projectsummary')"
+                                title="Project Summary">📈 Project Summary</button>
+                            <button class="mode-tab" data-mode="deploymentrunbook"
+                                onclick="switchMode('deploymentrunbook')" title="Deployment Runbook">⚙ Deployment
+                                Runbook</button>
+                            <button class="mode-tab" data-mode="storydesign" onclick="switchMode('storydesign')"
+                                title="Story Design">⚙ Story Design</button>
+                            <button class="mode-tab" data-mode="incidentsummary" onclick="switchMode('incidentsummary')"
+                                title="Incident Summary">⚙ Incident Summary</button>
+                        </div>
 
-                    <div id="gem-links" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-                        <button class="mode-tab active" data-mode="callscript" onclick="switchMode('callscript')" title="Call Script">📞 Call Script</button>
-                        <button class="mode-tab" data-mode="report" onclick="switchMode('report')" title="Status Report">📊 Status Report</button>
-                        <button class="mode-tab" data-mode="rca" onclick="switchMode('rca')" title="Root Cause Analysis">🔍 RCA</button>
-                        <button class="mode-tab" data-mode="blocker" onclick="switchMode('blocker')" title="Blocker Brief">🚧 Blocker Brief</button>
-                        <button class="mode-tab" data-mode="techapproach" onclick="switchMode('techapproach')" title="Technical Approach">⚙ Tech Approach</button>
-                        <button class="mode-tab" data-mode="taskbrief" onclick="switchMode('taskbrief')" title="Task Brief">📋 Task Brief</button>
-                        <button class="mode-tab" data-mode="projectsummary" onclick="switchMode('projectsummary')" title="Project Summary">📈 Project Summary</button>
-                        <button class="mode-tab" data-mode="deploymentrunbook" onclick="switchMode('deploymentrunbook')" title="Deployment Runbook">⚙ Deployment Runbook</button>
-                        <button class="mode-tab" data-mode="storydesign" onclick="switchMode('storydesign')" title="Story Design">⚙ Story Design</button>
-                        <button class="mode-tab" data-mode="incidentsummary" onclick="switchMode('incidentsummary')" title="Incident Summary">⚙ Incident Summary</button>
-                    </div>
-                </div>
+                        <div style="margin-top: 16px; display: none;">
+                            <div class="section-label">Load JSON</div>
+                            <div class="drop-zone" id="drop-zone" ondragover="handleDragOver(event)"
+                                ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+                                <input type="file" accept=".json,application/json" onchange="handleFileInput(event)">
+                                <div class="drop-zone-icon">📂</div>
+                                <div class="drop-zone-title">Drop JSON file here</div>
+                                <div class="drop-zone-sub" id="drop-sub">or click to browse</div>
+                            </div>
+                        </div>
 
-                <div style="margin-top: 16px; display: none;">
-                    <div class="section-label">Load JSON</div>
-                    <div class="drop-zone" id="drop-zone" ondragover="handleDragOver(event)"
-                        ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
-                        <input type="file" accept=".json,application/json" onchange="handleFileInput(event)">
-                        <div class="drop-zone-icon">📂</div>
-                        <div class="drop-zone-title">Drop JSON file here</div>
-                        <div class="drop-zone-sub" id="drop-sub">or click to browse</div>
+                        <div>
+                            <div
+                                style="display:flex;align-items:center;justify-content:space-between;margin:16px 0 8px;">
+                                <div class="section-label">Paste JSON</div>
+                                <button class="btn-edit-act" id="btn-copy-json" onclick="copyJsonToClipboard()"
+                                    style="display:none;">Copy JSON</button>
+                                <button class="btn-clear" onclick="clearAll()">Clear</button>
+                            </div>
+                            <textarea class="json-input" id="json-ta"
+                                placeholder='{ "meta": { "account": "..." }, ... }'
+                                oninput="handlePaste()">{ "meta": { "account": "Client Name", "call_type": "Weekly Sync", "call_date": "April 10, 2026", "pm": "Your Name", "presenter": "Program Manager", "audience": "Client Stakeholders" }, "topics": [ { "title": "Topic Title", "say_this": "Script language to speak out loud...", "technical_notes": "For your eyes only...", "tasks": [ { "num": "TASK001", "type": "Story", "assignee": "Dev Name", "title": "Task description", "state": "In Progress" } ], "qa_pairs": [ { "question": "Question they might ask", "answer": "Your answer" } ] } ], "closing_statement": "Thank you for your time..." }</textarea>
+                            <div id="json-err" style="font-size:14px;color:#df0000;margin-top:4px;display:block;"></div>
+                        </div>
                     </div>
-                </div>
-
-                <div>
-                    <div style="display:flex;align-items:center;justify-content:space-between;margin:16px 0 8px;">
-                        <div class="section-label">Paste JSON</div>
-                        <button class="btn-edit-act" id="btn-copy-json" onclick="copyJsonToClipboard()"
-                            style="display:none;">Copy JSON</button>
-                        <button class="btn-clear" onclick="clearAll()">Clear</button>
-                    </div>
-                    <textarea class="json-input" id="json-ta" placeholder='{ "meta": { "account": "..." }, ... }'
-                        oninput="handlePaste()">{ "meta": { "account": "Client Name", "call_type": "Weekly Sync", "call_date": "April 10, 2026", "pm": "Your Name", "presenter": "Program Manager", "audience": "Client Stakeholders" }, "topics": [ { "title": "Topic Title", "say_this": "Script language to speak out loud...", "technical_notes": "For your eyes only...", "tasks": [ { "num": "TASK001", "type": "Story", "assignee": "Dev Name", "title": "Task description", "state": "In Progress" } ], "qa_pairs": [ { "question": "Question they might ask", "answer": "Your answer" } ] } ], "closing_statement": "Thank you for your time..." }</textarea>
-                    <div id="json-err" style="font-size:14px;color:#df0000;margin-top:4px;display:block;"></div>
-                </div>
-            </div>
         </aside>
 
         <main class="main-content">

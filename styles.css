@@ -101,7 +101,7 @@ body {
 
 /* ── Sidebar ── */
 .sidebar {
-    width: 320px;
+    width: fit-content;
     flex-shrink: 0;
     background: var(--surface);
     border-right: 1px solid var(--border);
@@ -129,41 +129,114 @@ body {
     margin-bottom: 6px;
 }
 
-/* ── Mode Tabs ── */
-.mode-tabs {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 4px;
-    background: var(--lgray);
-    padding: 4px;
-    border-radius: 8px;
+/* ── Mode Tabs / Document Type Grid ── */
+.mode-tabs{
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+
+  padding: 10px;
+  border-radius: 12px;
+
+  background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+  border: 1px solid rgba(255,255,255,.08);
+  box-shadow: var(--shadow-soft);
 }
 
-.mode-tab {
-    padding: 10px;
-    font-size: 11px;
-    font-weight: 600;
-    text-align: left;
-    border: none;
-    background: #0f244e;
-    border-radius: 6px;
-    cursor: pointer;
-    color: #b3b8be;
-    transition: all 0.15s;
-    font-family: inherit;
-    letter-spacing: 0.01em;
+/* Responsive */
+@media (max-width: 620px){
+  .mode-tabs{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 420px){
+  .mode-tabs{ grid-template-columns: 1fr; }
 }
 
-.mode-tab:hover {
-    /* background: #082a57; */
-    color: #4586ff;
+/* Each tile */
+.mode-tab{
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+
+  border-radius: 10px;
+  border: 1px solid var(--tile-border);
+  background: linear-gradient(180deg, var(--tile-0), rgba(255,255,255,.02));
+
+  color: #f5f8ffd0;
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: .01em;
+
+  cursor: pointer;
+  user-select: none;
+
+  transition: transform .12s ease, background .12s ease, border-color .12s ease, box-shadow .12s ease, color .12s ease;
 }
 
-.mode-tab.active {
-    background: #000e27;
-    color: var(--lgray);
-    border: 2px solid #1d407a;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+/* Icon inside tile (supports <i>, <svg>, <span class="icon"> etc.) */
+.mode-tab .tab-icon,
+.mode-tab i,
+.mode-tab svg{
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+  flex: 0 0 16px;
+  color: #7f93b6;
+  transition: color .12s ease, transform .12s ease;
+}
+
+.mode-tab .tab-label{
+  line-height: 1.15;
+  text-align: left;
+  color: inherit;
+}
+
+/* Hover */
+.mode-tab:hover{
+  color: var(--blue);
+}
+.mode-tab:hover .tab-icon,
+.mode-tab:hover i,
+.mode-tab:hover svg{
+  color: #bcd2ff;
+}
+
+/* Active */
+.mode-tab.active{
+  background: linear-gradient(180deg, rgba(47,123,255,.85), rgba(0,183,255,.25));
+  border-color: rgba(47,123,255,.65);
+  color: #f5f8ff;
+  box-shadow: 0 14px 30px rgba(3,40,110,.45);
+}
+.mode-tab.active .tab-icon,
+.mode-tab.active i,
+.mode-tab.active svg{
+  color: #ffffff;
+}
+
+/* Keyboard accessibility */
+.mode-tab:focus{ outline: none; }
+.mode-tab:focus-visible{
+  outline: 2px solid rgba(47,123,255,.85);
+  outline-offset: 2px;
+}
+
+/* Press feel */
+.mode-tab:active{
+  transform: translateY(0);
+  box-shadow: 0 8px 16px rgba(0,0,0,.28);
+}
+
+/* Disabled state (optional) */
+.mode-tab:disabled{
+  cursor: not-allowed;
+  opacity: .55;
+  transform: none;
+  box-shadow: none;
 }
 
 /* ── Drop Zone ── */
