@@ -1,4 +1,13 @@
 // ════════════════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════════════════
+let currentData = null;
+let currentMode = 'callscript';
+let lastBlob = null;
+let lastFilename = '';
+let pasteTimer = null;
+
+// ════════════════════════════════════════════════════
 //  PDF / DOCX GENERATION
 // ════════════════════════════════════════════════════
 function downloadNow() {
