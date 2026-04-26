@@ -168,7 +168,7 @@
 }
 ```
 
-### Story Design
+### Story Design (Same as Technical Approach Document)
 
 ```json
 {
@@ -336,20 +336,244 @@
   ]
 }
 ```
-###
+### Task Brief
 
 ```json
-
+{
+  "account": "[String] Name of the account, client, or office location",
+  "task_num": "[String] Unique identifier for the task or incident (e.g., INC0000000)",
+  "task_type": "[String] Classification of the task (e.g., Incident, Request, Problem)",
+  "title": "[String] Brief, descriptive title of the issue or request",
+  "assigned_to": "[String] Name or group currently responsible for the task",
+  "pm": "[String] Project Manager or primary point of contact",
+  "reported_by": "[String] Name of the user who reported or requested the item",
+  "opened_date": "[String] Date the ticket was created (e.g., Month DD, YYYY)",
+  "target_date": "[String] Target completion or resolution date",
+  "state": "[String] Current workflow state (e.g., New, In Progress, On Hold, Resolved)",
+  "priority": "[String] Priority level indicating urgency and impact (e.g., 1 - High, 4 - Low)",
+  "environment": "[String] The environment where the issue occurs (e.g., PROD, DEV, UAT)",
+  "audience": "[String] Target audience impacted by the issue (e.g., Internal, External)",
+  "summary": "[String] Comprehensive overview of the issue, current status, and relevant context",
+  "reported_behavior": "[String] Exact description of what the user is experiencing",
+  "expected_behavior": "[String] Description of how the system or process should normally function",
+  "impact": "[String] Scope of the issue's effect on business operations or users",
+  "investigation": {
+    "summary": "[String] High-level summary of troubleshooting steps and triage performed so far",
+    "findings": [
+      "[String] Specific discovery, log entry, or fact identified during investigation",
+      "[String] Additional discovery or context"
+    ],
+    "ruled_out": [
+      "[String] Hypothesis or potential cause that has been tested and disproven"
+    ],
+    "current_theory": "[String] The leading hypothesis for the root cause of the issue"
+  },
+  "technical_detail": {
+    "components_involved": [
+      {
+        "type": "[String] Category of the component (e.g., Table, Business Service, API)",
+        "name": "[String] Specific name of the component",
+        "table": "[String] Database table name, if applicable",
+        "notes": "[String] Context on why this component is relevant to the issue"
+      }
+    ],
+    "relevant_data": "[String] Key identifiers, system logs, or metadata useful for troubleshooting",
+    "environment_notes": "[String] Details about system configurations, AI tools, or active deployments"
+  },
+  "proposed_approach": [
+    {
+      "option": "[String] Title of the proposed solution or workaround",
+      "recommended": "[String] 'Yes' or 'No' indicating if this is the preferred path",
+      "effort": "[String] Estimated level of effort (e.g., Low, Medium, High)",
+      "risk": "[String] Risk level associated with this approach (e.g., Low, Medium, High)",
+      "description": "[String] Detailed steps of what this approach entails",
+      "reason": "[String] Justification for suggesting this specific approach"
+    }
+  ],
+  "resolution": {
+    "status": "[String] Resolution state (e.g., Pending, In Progress, Completed)",
+    "description": "[String] Detailed explanation of the fix applied",
+    "verification": "[String] Steps taken to confirm the fix was successful",
+    "update_set": "[String] Associated deployment package or update set name, if applicable"
+  },
+  "next_steps": [
+    {
+      "action": "[String] Specific task that needs to be executed next",
+      "owner": "[String] Person or team responsible for executing the action",
+      "due": "[String] Deadline for this action item (e.g., YYYY-MM-DD)"
+    }
+  ],
+  "blockers": [
+    {
+      "blocker": "[String] Description of the obstacle preventing progress",
+      "type": "[String] Category of blocker (e.g., Access, Technical, Information)",
+      "impact": "[String] How the blocker affects the resolution of the task",
+      "owner": "[String] Person or team required to remove the blocker",
+      "raised_date": "[String] Date the blocker was identified (e.g., YYYY-MM-DD)",
+      "status": "[String] Current state of the blocker (e.g., Open, Resolved)",
+      "resolution_path": "[String] Strategy or steps required to resolve the blocker"
+    }
+  ],
+  "related_tasks": [
+    "[String] Array of related task numbers (e.g., PRB000123, CHG000456)"
+  ],
+  "developer_notes": "[String] Internal, technical notes including SLA tracking, backend details, or triage history",
+  "client_notes": "[String] Customer-facing update translating technical progress into business language",
+  "callouts": [
+    {
+      "dev": "[String] Name of the specific developer, team member, or stakeholder",
+      "items": [
+        "[String] Direct question, request for clarification, or action item for this individual",
+        "[String] Additional request or note"
+      ]
+    }
+  ]
+}
 ```
-###
+### Blocker Brief
 
 ```json
-
+{
+  "account": "[String] Name of the account, assignment group, or department",
+  "task_num": "[String] Unique identifier for the ticket or task (e.g., INC0000000)",
+  "title": "[String] Brief, descriptive summary of the issue",
+  "reported_by": "[String] Name of the end-user who reported the issue",
+  "assigned_to": "[String] Name of the agent or engineer currently working on the ticket",
+  "pm": "[String] Name of the Project Manager or overseeing lead",
+  "date": "[String] Date of the report or current update (e.g., Month DD, YYYY)",
+  "status": "[String] Current workflow status (e.g., Under Investigation, In Progress, Resolved)",
+  "summary": "[String] Comprehensive overview of the issue, current state, and recent escalations",
+  "blocker_description": "[String] Detailed explanation of the specific hurdle preventing resolution",
+  "impact": "[String] Description of how the issue affects the user's work, business operations, or delivery timelines",
+  "investigation": "[String] Summary of the triage process, troubleshooting steps taken, and findings so far",
+  "root_cause": "[String] Confirmed reason or leading theory for why the issue is occurring",
+  "proposed_solutions": [
+    {
+      "option": "[String] Title of the proposed fix or workaround",
+      "description": "[String] Detailed steps required to execute this solution",
+      "effort": "[String] Estimated level of effort (e.g., Low, Medium, High)",
+      "risk": "[String] Potential risk of implementing this solution (e.g., Low, Medium, High)",
+      "status": "[String] Current state of this proposed solution (e.g., In progress, Not started, Completed)",
+      "outcome": "[String] Result or findings after attempting this solution"
+    }
+  ],
+  "resolution": "[String] Final fix applied to resolve the ticket (leave empty if still open)",
+  "resolution_date": "[String] Date the ticket was resolved (e.g., YYYY-MM-DD)",
+  "next_steps": [
+    "[String] Specific, actionable next step including the owner and timeline"
+  ],
+  "open_questions": [
+    "[String] Unanswered question required for troubleshooting or clarification"
+  ],
+  "technical_context": "[String] Backend system details, affected database tables, configurations, and related records",
+  "client_communication": "[String] Summary of the latest update or messaging provided to the user/client",
+  "callouts": [
+    {
+      "dev": "[String] Name of the specific team member, developer, or stakeholder",
+      "items": [
+        "[String] Direct question, task, or request for clarification directed at this person"
+      ]
+    }
+  ]
+}
 ```
-###
+### Technical Approach Document (Same as Story Design)
 
 ```json
-
+{
+  "account": "[String] Name of the account, assignment group, or department",
+  "task_num": "[String] Unique identifier for the ticket or task (e.g., INC0000000)",
+  "title": "[String] Clear, descriptive title of the initiative or task",
+  "prepared_by": "[String] Name of the person who authored this document",
+  "developer": "[String] Name of the developer or engineer assigned to the task",
+  "date": "[String] Date of document creation or last update (e.g., Month DD, YYYY)",
+  "status": "[String] Current state of the document or project (e.g., Under Review, Approved, Draft)",
+  "version": "[String] Document version number (e.g., v1.0, v1.1)",
+  "problem_statement": "[String] Comprehensive description of the core issue or pain point being addressed",
+  "objective": "[String] The primary goal or expected outcome of this initiative",
+  "background": "[String] Context, history, or triage details leading up to this proposed work",
+  "scope": {
+    "in_scope": [
+      "[String] Specific deliverable, action, or feature included in the project scope",
+      "[String] Another in-scope item"
+    ],
+    "out_of_scope": [
+      "[String] Specific item, feature, or action explicitly excluded from this project",
+      "[String] Another out-of-scope item"
+    ],
+    "dependencies": [
+      "[String] External requirement, clarification, or prerequisite needed to complete the work"
+    ]
+  },
+  "current_state": "[String] Description of the existing process, workflow, or system behavior before changes",
+  "proposed_solution": "[String] Detailed overview of the intended fix, architecture, or new workflow",
+  "technical_spec": {
+    "platform": "[String] Target platform, application, or version (e.g., ServiceNow - Washington DC)",
+    "components": [
+      {
+        "type": "[String] Type of technical component (e.g., Flow, Table, Script Include)",
+        "name": "[String] Name of the specific component",
+        "table": "[String] Database table associated with the component",
+        "description": "[String] Purpose and function of this component within the solution",
+        "is_oob": "[String] Indicates if the component is Out-of-Box (OOB), Modified OOB, or Custom"
+      }
+    ],
+    "data_flow": "[String] Step-by-step sequence of how data or processes move through the proposed system",
+    "roles_and_access": "[String] Required user roles, groups, or permissions for the solution to function",
+    "integrations": "[String] Any third-party systems, APIs, or internal tools connected to this workflow",
+    "known_constraints": "[String] Technical limitations, missing documentation, or known roadblocks"
+  },
+  "alternatives_considered": [
+    {
+      "option": "[String] Name of the alternative approach that was evaluated",
+      "description": "[String] Brief summary of what this alternative entailed",
+      "reason_rejected": "[String] Justification for why this alternative was not selected"
+    }
+  ],
+  "test_plan": [
+    {
+      "scenario": "[String] Description of the specific test case or user action",
+      "expected_result": "[String] The anticipated outcome if the solution functions correctly",
+      "environment": "[String] The environment where testing will occur (e.g., DEV, TEST, UAT)"
+    }
+  ],
+  "acceptance_criteria": [
+    "[String] Specific, measurable condition that must be met for the work to be considered complete",
+    "[String] Another acceptance criterion"
+  ],
+  "rollback_plan": "[String] Detailed steps to revert the system to its previous state if the deployment fails",
+  "timeline": {
+    "estimate": "[String] Estimated total time or effort required (e.g., 3 days dev, 2 days test)",
+    "dev_start": "[String] Target or actual development start date (YYYY-MM-DD)",
+    "target_test": "[String] Target date to deploy to the testing environment (YYYY-MM-DD)",
+    "target_prod": "[String] Target date for production deployment (YYYY-MM-DD)",
+    "notes": "[String] Any assumptions or conditions affecting the timeline"
+  },
+  "open_items": [
+    {
+      "item": "[String] Description of an unresolved question, task, or blocker",
+      "owner": "[String] Person or team responsible for resolving this item",
+      "due": "[String] Deadline for resolving the item (YYYY-MM-DD)"
+    }
+  ],
+  "approvals": [
+    {
+      "name": "[String] Name of the required approver",
+      "role": "[String] Title or role of the approver (e.g., PM, Developer, QA)",
+      "status": "[String] Current approval status (e.g., Approved, Pending, Rejected)",
+      "date": "[String] Date the approval status was updated (YYYY-MM-DD or leave blank if pending)"
+    }
+  ],
+  "callouts": [
+    {
+      "dev": "[String] Name of the specific developer, team member, or stakeholder",
+      "items": [
+        "[String] Direct question, action item, or request for clarification directed at this person"
+      ]
+    }
+  ],
+  "notes": "[String] General administrative updates, active incident associations, or miscellaneous comments"
+}
 ```
 ###
 
