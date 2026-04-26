@@ -18,6 +18,12 @@ async function generate() {
         else if (currentMode === 'techapproach') result = await generateTechApproach(currentData);
         else if (currentMode === 'taskbrief') result = await generateTaskBrief(currentData);
         else if (currentMode === 'projectsummary') result = await generateProjectSummary(currentData);
+        else if (currentMode === 'deploymentrunbook') result = await generateDeploymentRunbook(currentData);
+        else if (currentMode === 'storydesign') result = await generateStoryDesign(currentData);
+        else if (currentMode === 'incidentsummary') result = await generateIncidentSummary(currentData);
+
+
+
 
         lastBlob = result.blob;
         lastFilename = result.filename;
@@ -32,7 +38,6 @@ async function generate() {
         btn.classList.remove('loading');
     }
 }
-
 
 function loadJSON(raw) {
     const errEl = document.getElementById('json-err');
@@ -56,7 +61,13 @@ function loadJSON(raw) {
         else if (data.task_num && data.blocker_description) switchMode('blocker');
         else if (data.task_num && data.proposed_solution && data.technical_spec) switchMode('techapproach');
         else if (data.task_num && (data.reported_behavior || data.investigation)) switchMode('taskbrief');
-        else if (data.project_name) switchMode('projectsummary');
+        else if (data.project_name && !data.deployment_steps) switchMode('projectsummary');
+        else if (data.deployment_steps && data.ops_lead) switchMode('deploymentrunbook');
+        else if (data.story_id) switchMode('storydesign');
+        // Detect by incident_number (RCA uses "incident")
+        else if (data.incident_number) switchMode('incidentsummary');
+
+
 
         document.getElementById('json-ta').value = JSON.stringify(data, null, 2);
         renderPreview(data);
@@ -79,4 +90,11 @@ function renderPreview(data) {
     else if (currentMode === 'techapproach') el.innerHTML = renderTechApproachPreview(data);
     else if (currentMode === 'taskbrief') el.innerHTML = renderTaskBriefPreview(data);
     else if (currentMode === 'projectsummary') el.innerHTML = renderProjectSummaryPreview(data);
+    else if (currentMode === 'deploymentrunbook') el.innerHTML = renderDeploymentRunbookPreview(data);
+    else if (currentMode === 'storydesign') el.innerHTML = renderStoryDesignPreview(data);
+    else if (currentMode === 'incidentsummary') el.innerHTML = renderIncidentSummaryPreview(data);
+
+
+
+
 }
