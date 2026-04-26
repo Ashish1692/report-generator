@@ -22,14 +22,6 @@
                 </div>
             </div>
             <div class="sidebar-inner">
-
-                <!-- <div style="display:flex;flex-direction:column;gap:6px;">
-                    <button class="btn-gen primary" id="btn-gen" disabled onclick="generate()">
-                        <div class="spinner"></div>
-                        <span class="btn-label" id="btn-label">⚡ Generate Document</span>
-                    </button>
-                </div> -->
-
                 <div>
                     <div
                         style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; align-items: end;">
@@ -93,7 +85,6 @@
                         <div
                             style="display:flex;align-items:center;justify-content:center;font-size:11px;color:#94a3b8;background:rgba(0,0,0,0.03);border-radius:6px;border:1px dashed #cbd5e1;">
                             N/A</div>
-
                     </div>
                 </div>
 
@@ -117,48 +108,15 @@
                     </div>
                     <textarea class="json-input" id="json-ta" placeholder='{ "meta": { "account": "..." }, ... }'
                         oninput="handlePaste()">{ "meta": { "account": "Client Name", "call_type": "Weekly Sync", "call_date": "April 10, 2026", "pm": "Your Name", "presenter": "Program Manager", "audience": "Client Stakeholders" }, "topics": [ { "title": "Topic Title", "say_this": "Script language to speak out loud...", "technical_notes": "For your eyes only...", "tasks": [ { "num": "TASK001", "type": "Story", "assignee": "Dev Name", "title": "Task description", "state": "In Progress" } ], "qa_pairs": [ { "question": "Question they might ask", "answer": "Your answer" } ] } ], "closing_statement": "Thank you for your time..." }</textarea>
-                    <div id="json-err" style="font-size:11px;color:#EF4444;margin-top:4px;display:none;"></div>
+                    <div id="json-err" style="font-size:14px;color:#df0000;margin-top:4px;display:block;"></div>
                 </div>
-
-                <div class="val-panel" id="val-panel" style="display: none;">
-                    <div class="val-header">
-                        <div class="val-pip" id="val-pip"></div>
-                        <span id="val-txt">Loading...</span>
-                    </div>
-                    <div class="val-grid" id="val-grid"></div>
-                    <div id="val-msgs"></div>
-                </div>
-
-                <!-- <div class="how-to-card">
-                    <div class="how-to-title">How to use</div>
-                    <div class="how-to-steps">
-                        <div class="how-to-step">
-                            <div class="step-num">1</div><span>Get your JSON from the AI extractor or DevShop
-                                Studio</span>
-                        </div>
-                        <div class="how-to-step">
-                            <div class="step-num">2</div><span>Drop the file or paste it into the box above</span>
-                        </div>
-                        <div class="how-to-step">
-                            <div class="step-num">3</div><span>Preview the output, then click Generate</span>
-                        </div>
-                        <div class="how-to-step">
-                            <div class="step-num">4</div><span>Download the Word document to your device</span>
-                        </div>
-                    </div>
-                </div> -->
-
             </div>
-
         </aside>
 
         <main class="main-content">
-
             <div class="tab-bar">
                 <button class="tab-btn active" data-tab="preview" onclick="switchTab('preview')">Preview</button>
-                <button class="tab-btn" data-tab="edit" onclick="switchTab('edit')">✏️ Edit</button>
-                <!-- <button class="tab-btn" data-tab="json" style="display:none;" disabled onclick="switchTab('json')">JSON</button> -->
-                <button class="tab-btn" data-tab="guide" onclick="switchTab('guide')">Schema Guide</button>
+                <button class="tab-btn" data-tab="json" onclick="switchTab('json')">JSON</button>
                 <div style="flex:1;"></div>
                 <div>
                     <button class="btn-gen primary" id="btn-gen" disabled onclick="generate()">
@@ -166,8 +124,7 @@
                         <span class="btn-label" id="btn-label">⚡ Generate Document</span>
                     </button>
                 </div>
-                <button class="btn-pdf" id="btn-pdf" disabled onclick="generatePdf()" title="Download PDF">⬇
-                    PDF</button>
+                <button class="btn-pdf" id="btn-pdf" disabled onclick="generatePdf()" title="Download PDF">⬇ PDF</button>
             </div>
 
             <div class="tab-panels">
@@ -178,8 +135,7 @@
                         <div class="banner-title" id="ban-filename">Document ready</div>
                         <div class="banner-sub">Click below to download your Word document</div>
                         <div class="banner-actions">
-                            <button class="btn-small dl" id="ban-dl-btn" onclick="downloadNow()">⬇ Download
-                                .docx</button>
+                            <button class="btn-small dl" id="ban-dl-btn" onclick="downloadNow()">⬇ Download .docx</button>
                         </div>
                     </div>
                 </div>
@@ -200,133 +156,30 @@
                     <div class="preview-wrap" id="preview-content" style="display:none;"></div>
                 </div>
 
-                <div class="tab-panel" id="panel-json" style="display: none;">
+                <div class="tab-panel" id="panel-json">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
                         <div style="font-size:13px;font-weight:700;color:var(--lgray);">JSON Data</div>
+                        <!-- New Apply Button -->
+                        <button class="btn-edit-act" id="btn-apply-json" onclick="applyJsonEdits()"
+                            style="display:none; background:#188300; color:#fff;">
+                            ✓ Apply Edits
+                        </button>
                         <button class="btn-edit-act" id="btn-copy-json" onclick="copyJsonToClipboard()"
                             style="display:none;">📋 JSON</button>
                     </div>
-                    <div class="json-view" id="json-view">
+                    <pre class="json-view" id="json-view" contenteditable="true">
                         <div class="json-empty" style="color: var(--lgray);">No JSON loaded yet.</div>
-                    </div>
+                    </pre>
                 </div>
-
-                <div class="tab-panel" id="panel-edit">
-                    <div id="edit-empty" class="empty-state">
-                        <div class="empty-state-icon">✏️</div>
-                        <div class="empty-state-title">No document loaded</div>
-                        <div class="empty-state-sub">Load a JSON file first to edit its fields</div>
-                    </div>
-
-                    <div id="edit-content" style="display:none;">
-                        <div
-                            style="display:flex; align-items:center; justify-content:space-between; background-color: #0a172f;">
-                            <div style="font-size:13px;font-weight:700;color:var(--lgray, #cbd5e1);">Edit Document
-                                Fields</div>
-                            <div style="display:flex;gap:8px;">
-                                <button class="btn-edit-act" onclick="applyEdits()">✓ Apply Changes</button>
-                                <button class="btn-edit-act secondary" onclick="resetEdits()">↺ Reset</button>
-                            </div>
-                        </div>
-                        <div id="edit-fields" style="width: 100%; margin-top: 10px;"></div>
-                    </div>
-                </div>
-
-                <div class="tab-panel" id="panel-guide">
-                    <div style="max-width:90vw;">
-                        <h2 style="font-size:16px;font-weight:700;color:var(--lgray);margin-bottom:16px;">JSON Schema
-                            Reference</h2>
-                        <div style="margin-bottom:24px;">
-                            <div class="white-section-title">Call Script</div>
-                            <div class="white-text">Required from your AI extractor. Produces the formatted call
-                                guide
-                                with SAY THIS blocks, Q&A tables, and task lists.</div>
-                            <div class="format-hint">{
-                                "meta": {
-                                "account": "Client Name",
-                                "call_type": "Weekly Sync",
-                                "call_date": "April 10, 2026",
-                                "pm": "Your Name",
-                                "presenter": "Program Manager",
-                                "audience": "Client Stakeholders"
-                                },
-                                "topics": [
-                                {
-                                "title": "Topic Title",
-                                "say_this": "Script language to speak out loud...",
-                                "technical_notes": "For your eyes only...",
-                                "tasks": [
-                                { "num": "TASK001", "type": "Story", "assignee": "Dev Name", "title": "Task
-                                description", "state": "In Progress" }
-                                ],
-                                "qa_pairs": [
-                                { "question": "Question they might ask", "answer": "Your answer" }
-                                ]
-                                }
-                                ],
-                                "closing_statement": "Thank you for your time..."
-                                }</div>
-                        </div>
-
-                        <div style="margin-bottom:24px;">
-                            <div class="white-section-title">Status Report</div>
-                            <div class="format-hint">{
-                                "meta": { "account": "...", "week_of": "...", "pm": "...", "org": "..." },
-                                "executive_summary": "Week summary text...",
-                                "metrics": { "open_incidents": 2, "stories_in_flight": 5, "blockers": 1,
-                                "tasks_closed_this_week": 3 },
-                                "focus_item": { "title": "Item Title", "body": "Description..." },
-                                "incidents": [ { "num": "INC001", "title": "...", "assignee": "...", "state": "...",
-                                "priority": "...", "note": "..." } ],
-                                "stories": [ { "num": "STRY001", "title": "...", "assignee": "...", "priority":
-                                "...",
-                                "state": "...", "phase": "WIP" } ],
-                                "uat_backlog": [ "Item 1", "Item 2" ],
-                                "process_note": "Any process updates...",
-                                "blockers": [ { "blocker": "...", "impact": "...", "resolution": "..." } ],
-                                "action_items": [ { "owner": "...", "action": "...", "item": "TASK#", "due": "Date"
-                                } ],
-                                "team": [ { "name": "...", "role": "...", "focus": "..." } ]
-                                }</div>
-                        </div>
-
-                        <div>
-                            <div class="white-section-title">RCA</div>
-                            <div class="format-hint">{
-                                "incident": "INC0012345",
-                                "account": "Client Name",
-                                "summary": { "title": "...", "date_reported": "...", "date_resolved": "...",
-                                "severity":
-                                "...", "affected_system": "...", "reported_by": "...", "resolved_by": "...",
-                                "root_cause_category": "...", "downtime": "...", "impact_summary": "..." },
-                                "s1": "Incident overview text...",
-                                "s2": "Timeline narrative...",
-                                "s3": "Root cause explanation...",
-                                "s4": "Resolution steps...",
-                                "s5": "Prevention measures...",
-                                "s6": ["Lesson 1", "Lesson 2"],
-                                "s7": ["Action item 1", "Action item 2"],
-                                "s8": ["Follow-up 1"],
-                                "s10": "Document notes and distribution...",
-                                "timeline": [
-                                { "time": "10:00 AM", "event": "Alert triggered", "actor": "System", "type":
-                                "Detection"
-                                }
-                                ],
-                                "callout_boxes": [
-                                { "dev": "Developer Name", "section": "s3", "items": ["Verify this detail", "Confirm
-                                timeline"] }
-                                ]
-                                }</div>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </main>
     </div>
 
     <script src="./docxLib.js"></script>
+    <script src="./constantFunctions.js"></script>
+    <script src="./uiFunctions.js"></script>
+    <script src="./helper.js"></script>
+    <script src="./template.js"></script>
     <script src="./main.js"></script>
 </body>
 
