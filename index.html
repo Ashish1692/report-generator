@@ -23,68 +23,18 @@
             </div>
             <div class="sidebar-inner">
                 <div>
-                    <div
-                        style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; align-items: end;">
+                    <div style="margin-bottom: 10px;">
                         <div class="section-label" style="margin-bottom:0;">Select type</div>
-                        <div class="section-label" style="margin-bottom:0;">Redirect to AI</div>
                     </div>
 
-                    <div id="gem-links"
-                        style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; align-items: stretch;">
-
-                        <button class="mode-tab active" data-mode="callscript" onclick="switchMode('callscript')"
-                            title="Call Script">📞 Call Script</button>
-                        <a class="gem-link active" data-modes="callscript"
-                            href="https://gemini.google.com/gem/18mhrUFqeENrKNekRyVwQMIZ27zUBKFXw?usp=sharing"
-                            target="_blank"
-                            style="display:flex;align-items:center;justify-content:center;margin:0;text-align:center;font-size:11px;text-decoration:none;padding:6px;">Call
-                            Script Gen ↗</a>
-
-                        <button class="mode-tab" data-mode="report" onclick="switchMode('report')"
-                            title="Status Report">📊 Status Report</button>
-                        <a class="gem-link" data-modes="report"
-                            href="https://gemini.google.com/gem/1NXY6UZ1BOYwIW-46m4eSFEjJB4Y2xsEn?usp=sharing"
-                            target="_blank"
-                            style="display:flex;align-items:center;justify-content:center;margin:0;text-align:center;font-size:11px;text-decoration:none;padding:6px;">Status
-                            Update ↗</a>
-
-                        <button class="mode-tab" data-mode="rca" onclick="switchMode('rca')"
-                            title="Root Cause Analysis">🔍 RCA</button>
-                        <a class="gem-link" data-modes="rca"
-                            href="https://gemini.google.com/gem/1dTXnBNvNbtIJF3Jz659zAPxUsiLK207S?usp=sharing"
-                            target="_blank"
-                            style="display:flex;align-items:center;justify-content:center;margin:0;text-align:center;font-size:11px;text-decoration:none;padding:6px;">RCA
-                            Generator ↗</a>
-
-                        <button class="mode-tab" data-mode="blocker" onclick="switchMode('blocker')"
-                            title="Blocker Brief">🚧 Blocker Brief</button>
-                        <a class="gem-link" data-modes="blocker"
-                            href="https://gemini.google.com/gem/1VL4WEufwXBJH15Ff-v1Bl33reFC4lf4c?usp=sharing"
-                            target="_blank"
-                            style="display:flex;align-items:center;justify-content:center;margin:0;text-align:center;font-size:11px;text-decoration:none;padding:6px;">Blocker
-                            Brief ↗</a>
-
-                        <button class="mode-tab" data-mode="techapproach" onclick="switchMode('techapproach')"
-                            title="Technical Approach">⚙ Tech Approach</button>
-                        <a class="gem-link" data-modes="techapproach"
-                            href="https://gemini.google.com/gem/1dRhBaMaHm5Zrpu0XwFBkQFg1qID5wPEu?usp=sharing"
-                            target="_blank"
-                            style="display:flex;align-items:center;justify-content:center;margin:0;text-align:center;font-size:11px;text-decoration:none;padding:6px;">Tech
-                            Approach ↗</a>
-
-                        <button class="mode-tab" data-mode="taskbrief" onclick="switchMode('taskbrief')"
-                            title="Task Brief">📋 Task Brief</button>
-                        <a class="gem-link" data-modes="taskbrief"
-                            href="https://gemini.google.com/gem/1pqgdhgKQZDesXLbUOvZcwBaMaFWzxcu8?usp=sharing"
-                            target="_blank"
-                            style="display:flex;align-items:center;justify-content:center;margin:0;text-align:center;font-size:11px;text-decoration:none;padding:6px;">Task
-                            Brief ↗</a>
-
-                        <button class="mode-tab" data-mode="projectsummary" onclick="switchMode('projectsummary')"
-                            title="Project Summary">📈 Project Summary</button>
-                        <div
-                            style="display:flex;align-items:center;justify-content:center;font-size:11px;color:#94a3b8;background:rgba(0,0,0,0.03);border-radius:6px;border:1px dashed #cbd5e1;">
-                            N/A</div>
+                    <div id="gem-links" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                        <button class="mode-tab active" data-mode="callscript" onclick="switchMode('callscript')" title="Call Script">📞 Call Script</button>
+                        <button class="mode-tab" data-mode="report" onclick="switchMode('report')" title="Status Report">📊 Status Report</button>
+                        <button class="mode-tab" data-mode="rca" onclick="switchMode('rca')" title="Root Cause Analysis">🔍 RCA</button>
+                        <button class="mode-tab" data-mode="blocker" onclick="switchMode('blocker')" title="Blocker Brief">🚧 Blocker Brief</button>
+                        <button class="mode-tab" data-mode="techapproach" onclick="switchMode('techapproach')" title="Technical Approach">⚙ Tech Approach</button>
+                        <button class="mode-tab" data-mode="taskbrief" onclick="switchMode('taskbrief')" title="Task Brief">📋 Task Brief</button>
+                        <button class="mode-tab" data-mode="projectsummary" onclick="switchMode('projectsummary')" title="Project Summary">📈 Project Summary</button>
                     </div>
                 </div>
 
@@ -124,7 +74,8 @@
                         <span class="btn-label" id="btn-label">⚡ Generate Document</span>
                     </button>
                 </div>
-                <button class="btn-pdf" id="btn-pdf" disabled onclick="generatePdf()" title="Download PDF">⬇ PDF</button>
+                <button class="btn-pdf" id="btn-pdf" disabled onclick="generatePdf()" title="Download PDF">⬇
+                    PDF</button>
             </div>
 
             <div class="tab-panels">
@@ -135,7 +86,8 @@
                         <div class="banner-title" id="ban-filename">Document ready</div>
                         <div class="banner-sub">Click below to download your Word document</div>
                         <div class="banner-actions">
-                            <button class="btn-small dl" id="ban-dl-btn" onclick="downloadNow()">⬇ Download .docx</button>
+                            <button class="btn-small dl" id="ban-dl-btn" onclick="downloadNow()">⬇ Download
+                                .docx</button>
                         </div>
                     </div>
                 </div>

@@ -140,12 +140,12 @@ body {
 }
 
 .mode-tab {
-    padding: 7px 4px;
+    padding: 10px;
     font-size: 11px;
     font-weight: 600;
-    text-align: center;
+    text-align: left;
     border: none;
-    background: transparent;
+    background: #0f244e;
     border-radius: 6px;
     cursor: pointer;
     color: #b3b8be;
@@ -160,9 +160,9 @@ body {
 }
 
 .mode-tab.active {
-    background: transparent;
+    background: #000e27;
     color: var(--lgray);
-    border: 2px solid var(--border);
+    border: 2px solid #1d407a;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -214,7 +214,7 @@ body {
     font-family: 'DM Mono', monospace;
     font-size: 11px;
     padding: 10px;
-    border: 1px solid var(--border);
+    border: 1px solid transparent;
     border-radius: var(--radius);
     resize: vertical;
     color: white;
@@ -222,10 +222,11 @@ body {
     outline: none;
     transition: border 0.15s;
     line-height: 1.5;
+    scrollbar-width: none;
 }
 
 .json-input:focus {
-    border-color: var(--blue);
+    border-color: #033388;
     background: #070f20;
 }
 
@@ -961,7 +962,7 @@ body {
 }
 
 .edit-textarea {
-        background: #162531;
+    background: #162531;
     width: 100%;
     padding: 8px 10px;
     border: 1px solid #4A5568;
