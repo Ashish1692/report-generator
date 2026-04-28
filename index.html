@@ -9,6 +9,10 @@
         href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="./assets/styles.css">
+    <link rel="stylesheet" href="./assets/jsonStyle.css">
+    <!-- 1. CSS for the Dark Theme & Syntax -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism-themes/1.9.0/prism-dracula.min.css">
 </head>
 
 <body>
@@ -91,6 +95,8 @@
             <div class="tab-bar">
                 <button class="tab-btn active" data-tab="preview" onclick="switchTab('preview')">Preview</button>
                 <button class="tab-btn" data-tab="json" onclick="switchTab('json')">JSON</button>
+                <button class="tab-btn" data-tab="masterjson" onclick="switchTab('masterjson')">Schema Guide</button>
+
                 <div style="flex:1;"></div>
                 <div>
                     <button class="btn-gen primary" id="btn-gen" disabled onclick="generate()">
@@ -150,15 +156,31 @@
                         <div class="json-empty" style="color: var(--lgray);">No JSON loaded yet.</div>
                     </pre>
                 </div>
+                <div class="tab-panel" id="panel-masterjson">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                        <div style="font-size:18px;font-weight:700;color:var(--lgray);">Schema Guide</div>
+                    </div>
+                    <hr/>
+                     <div id="content" class="markdown-body">Loading...</div>
+                </div>
             </div>
         </main>
     </div>
+    <!-- 2. Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <!-- IMPORTANT: Load Prism CORE first -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    
+    <!-- IMPORTANT: Load JSON component (Required for JSON highlighting) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
 
     <script src="./core/docxLib.js"></script>
     <script src="./core/constantFunctions.js"></script>
     <script src="./core/uiFunctions.js"></script>
     <script src="./core/OOB_main.js"></script>
     <script src="./core/OOB_template.js"></script>
+    <script src="./utils/json.js"></script>
     <script src="./utils/helper.js"></script>
     <script src="./utils/template.js"></script>
     <script src="./utils/main.js"></script>
