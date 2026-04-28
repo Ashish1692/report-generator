@@ -5,13 +5,13 @@
  * Clear All Function
  */
 function clearAll() {
-        document.getElementById('json-ta').value = "";
-        document.getElementById('json-view').innerHTML = "";
-        document.getElementById('json-err').style.display = "none";
-        // Reset preview states
-        document.getElementById('preview-empty').style.display = 'block';
-        document.getElementById('preview-content').style.display = 'none';
-        currentData = null;
+    document.getElementById('json-ta').value = "";
+    document.getElementById('json-view').innerHTML = "";
+    document.getElementById('json-err').style.display = "none";
+    // Reset preview states
+    document.getElementById('preview-empty').style.display = 'block';
+    document.getElementById('preview-content').style.display = 'none';
+    currentData = null;
 }
 
 function updateGenButton() {
@@ -32,22 +32,22 @@ function renderJsonView(data) {
 async function copyJsonToClipboard() {
     const jsonArea = document.getElementById('json-ta');
     const copyBtn = document.getElementById('btn-copy-json');
-    
+
     if (!jsonArea.value) return;
 
     try {
         await navigator.clipboard.writeText(jsonArea.value);
-        
+
         // Visual feedback
         const originalText = copyBtn.textContent;
         copyBtn.textContent = "✅ Copied!";
         copyBtn.style.backgroundColor = "#188300";
-        
+
         setTimeout(() => {
             copyBtn.textContent = originalText;
             copyBtn.style.backgroundColor = ""; // Resets to CSS default
         }, 2000);
-        
+
     } catch (err) {
         console.error('Failed to copy: ', err);
         // Fallback for older browsers
@@ -131,10 +131,14 @@ function openAiGem() {
         // Optional: Change the alert to something less intrusive, like a console log 
         // or a small temporary toast message on screen.
         console.log(`Prompt copied: "${prompt}"\n\nRedirecting to Gemini...`);
-        
+
         // 4. Redirect
         window.open('https://gemini.google.com/gem/295a1e65f464?usp=sharing', '_blank');
     }).catch(err => {
         console.error('Could not copy text: ', err);
     });
+}
+
+function exit() {
+    document.getElementById('ban-ok').style.display = 'none';
 }
