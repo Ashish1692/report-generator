@@ -575,6 +575,162 @@
   "notes": "[String] General administrative updates, active incident associations, or miscellaneous comments"
 }
 ```
+### Single Request Approval
+
+```json
+{
+  "signoff_id": "ENHC001092",
+  "title": "Automated Service Catalog Routing",
+  "category": "User Story",
+  "objective": "Streamline request fulfillment by routing to local teams based on user location.",
+  "details": "We will implement a lookup on the 'cmn_location' table to identify the 'Support Group' associated with the requester's building.",
+  "impact": "Reduces manual triage time by 45%.",
+  "effort": "16 Hours",
+  "requirements": [
+    "User must have a building populated on their profile.",
+    {
+      "text": "Requirement: The 'Support Group' field must be mandatory.",
+      "bold": true
+    },
+    {
+      "text": "Note: This logic applies to top 5 items only.",
+      "italic": true
+    },
+    {
+      "text": "Nested Condition Example:",
+      "sub_items": [
+        "Sub-item 1: Verification step",
+        {
+          "text": "Sub-item 2: Deep Link",
+          "url": "https://company.wiki"
+        }
+      ]
+    },
+    {
+      "text": "Refer to the mapping document",
+      "url": "https://company.wiki/map"
+    }
+  ]
+}
+```
+### Bulk Appoval Requests
+
+```json
+{
+  "project_name": "Q4 IT Service Desk Upgrades",
+  "release_title": "Release Bundle - November",
+  "approval_tasks": [
+    {
+      "num": "ENHC0013",
+      "title": "Service Catalog Hardware Request Revamp",
+      "objective": "Streamline the hardware request process for new hires.",
+      "details": "Combine laptop, monitor, and accessory requests into a single dynamic form using conditional logic.",
+      "effort": "12 Hours",
+      "requirements": [
+        "Hardware models must be pulled dynamically from the CMDB.",
+        {
+          "text": "Requirement: Manager approval workflow must be strictly enforced.",
+          "bold": true
+        },
+        {
+          "text": "Condition Rules:",
+          "sub_items": [
+            "If 'Developer' is selected, automatically add a secondary monitor.",
+            {
+              "text": "List of approved developer models",
+              "url": "https://company.wiki/hardware/dev"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "num": "STRY0056",
+      "title": "Automated Password Reset Flow",
+      "objective": "Reduce Tier 1 helpdesk tickets related to password resets.",
+      "details": "Implement self-service password reset using Okta integration with an SMS or Email MFA challenge.",
+      "effort": "20 Hours",
+      "requirements": [
+        "User must have a valid recovery email or phone number registered.",
+        {
+          "text": "Note: SMS gateway limits apply to international numbers.",
+          "italic": true
+        },
+        {
+          "text": "Refer to the Okta API specification",
+          "url": "https://company.wiki/okta-integration"
+        }
+      ]
+    },
+    {
+      "num": "DFCT0089",
+      "title": "Fix Executive Dashboard Rendering Issues",
+      "objective": "Ensure weekly performance charts render correctly on tablet devices.",
+      "details": "Update the charting library and adjust CSS flexbox properties to prevent overlapping legends on iPad Pro viewports.",
+      "effort": "6 Hours",
+      "requirements": [
+        "Must be tested on iOS 16+.",
+        {
+          "text": "Critical: Existing report data must not be altered or lost.",
+          "bold": true
+        },
+        {
+          "text": "Regression Testing Scope:",
+          "sub_items": [
+            "Verify standard desktop view remains intact.",
+            "Check dark mode compatibility."
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+###
+
+```json
+
+```
+###
+
+```json
+
+```
+###
+
+```json
+
+```
+###
+
+```json
+
+```
+###
+
+```json
+
+```
+###
+
+```json
+
+```
+###
+
+```json
+
+```
+###
+
+```json
+
+```
+###
+
+```json
+
+```
 ###
 
 ```json

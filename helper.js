@@ -21,6 +21,8 @@ async function generate() {
         else if (currentMode === 'deploymentrunbook') result = await generateDeploymentRunbook(currentData);
         else if (currentMode === 'storydesign') result = await generateStoryDesign(currentData);
         else if (currentMode === 'incidentsummary') result = await generateIncidentSummary(currentData);
+        else if (currentMode === 'signoff') result = await generateSignOffRequest(currentData);
+        else if (currentMode === 'bulkapproval') result = await generateBulkApprovalRequest(currentData);
 
 
 
@@ -61,11 +63,17 @@ function loadJSON(raw) {
         else if (data.task_num && data.blocker_description) switchMode('blocker');
         else if (data.task_num && data.proposed_solution && data.technical_spec) switchMode('techapproach');
         else if (data.task_num && (data.reported_behavior || data.investigation)) switchMode('taskbrief');
-        else if (data.project_name && !data.deployment_steps) switchMode('projectsummary');
+        else if (data.project_name && !data.deployment_steps && !data.approval_tasks) switchMode('projectsummary');
         else if (data.deployment_steps && data.ops_lead) switchMode('deploymentrunbook');
         else if (data.story_id) switchMode('storydesign');
         // Detect by incident_number (RCA uses "incident")
         else if (data.incident_number) switchMode('incidentsummary');
+        // Bulk Approval Detection
+        else if (data.approval_tasks && data.project_name) switchMode('bulkapproval');
+        // Single Approval Detection
+        else if (data.signoff_id && data.objective) switchMode('signoff');
+
+
 
 
 
@@ -93,6 +101,8 @@ function renderPreview(data) {
     else if (currentMode === 'deploymentrunbook') el.innerHTML = renderDeploymentRunbookPreview(data);
     else if (currentMode === 'storydesign') el.innerHTML = renderStoryDesignPreview(data);
     else if (currentMode === 'incidentsummary') el.innerHTML = renderIncidentSummaryPreview(data);
+    else if (currentMode === 'signoff') el.innerHTML = renderSignOffPreview(data);
+    else if (currentMode === 'bulkapproval') el.innerHTML = renderBulkApprovalPreview(data);
 
 
 
