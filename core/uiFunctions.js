@@ -101,3 +101,40 @@ function applyJsonEdits() {
         alert('Cannot apply edits. Invalid JSON syntax:\n' + err.message);
     }
 }
+
+// Map internal keys to the names used in your AI Gem's Knowledge base
+const MODE_TO_TEMPLATE_NAME = {
+    callscript: "Call Script",
+    report: "Status Report",
+    rca: "RCA",
+    blocker: "Blocker Brief",
+    techapproach: "Technical Approach Document",
+    taskbrief: "Task Brief",
+    projectsummary: "Project Summary",
+    deploymentrunbook: "Deployment Runbook",
+    storydesign: "Story Design",
+    incidentsummary: "Incident Resolution Summary",
+    signoff: "Single Request Approval",
+    bulkapproval: "Bulk Approval Requests"
+};
+
+function openAiGem() {
+    // 1. Get the friendly name based on currentMode
+    // Fallback to "the appropriate" if for some reason currentMode is missing
+    const templateName = MODE_TO_TEMPLATE_NAME[currentMode] || "the appropriate";
+
+    // 2. Construct the prompt
+    const prompt = `Use ${templateName} template.`;
+
+    // 3. Copy to clipboard
+    navigator.clipboard.writeText(prompt).then(() => {
+        // Optional: Change the alert to something less intrusive, like a console log 
+        // or a small temporary toast message on screen.
+        console.log(`Prompt copied: "${prompt}"\n\nRedirecting to Gemini...`);
+        
+        // 4. Redirect
+        window.open('https://gemini.google.com/gem/295a1e65f464?usp=sharing', '_blank');
+    }).catch(err => {
+        console.error('Could not copy text: ', err);
+    });
+}

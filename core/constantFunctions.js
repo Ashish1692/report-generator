@@ -157,12 +157,3 @@ function handlePaste() {
 function escHtml(s) {
     return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
-
-function openAiGem() {
-    // You can also copy a prompt to the clipboard before redirecting
-    const prompt = "Please generate the JSON for my work data using the templates in your knowledge base.";
-    navigator.clipboard.writeText(prompt).then(() => {
-        alert("Prompt copied! Paste it into the Gemini Gem.");
-        window.open('https://gemini.google.com/gem/1IS4c8tLI4tje0bU3LKF9kRLUSrbqi2vI?usp=sharing', '_blank');
-    });
-}
