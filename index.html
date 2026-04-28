@@ -64,18 +64,25 @@
                             </div>
                         </div>
 
-                        <div>
+                        <div style="margin-top: 18px;">
+                            <div class="section-label">Paste JSON</div>
                             <div
-                                style="display:flex;align-items:center;justify-content:space-between;margin:16px 0 8px;">
-                                <div class="section-label">Paste JSON</div>
-                                <button class="btn-edit-act" id="btn-copy-json" onclick="copyJsonToClipboard()"
-                                    style="display:none;">Copy JSON</button>
-                                <button class="btn-clear" onclick="clearAll()">Clear</button>
+                                style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 12px; gap: 8px;">
+                                <!-- AI Redirect Button -->
+                                <button class="btn-ai" onclick="openAiGem()" title="Open Gemini Gem to generate JSON">
+                                    ✨ AI Assistant
+                                </button>
+
+                                <div style="display:flex; gap: 4px;">
+                                    <button class="btn-copy-sidebar" id="btn-copy-json"
+                                        onclick="copyJsonToClipboard()">Copy JSON</button>
+                                    <button class="btn-clear" onclick="clearAll()">Clear</button>
+                                </div>
                             </div>
+
                             <textarea class="json-input" id="json-ta"
-                                placeholder='{ "meta": { "account": "..." }, ... }'
-                                oninput="handlePaste()">{ "meta": { "account": "Client Name", "call_type": "Weekly Sync", "call_date": "April 10, 2026", "pm": "Your Name", "presenter": "Program Manager", "audience": "Client Stakeholders" }, "topics": [ { "title": "Topic Title", "say_this": "Script language to speak out loud...", "technical_notes": "For your eyes only...", "tasks": [ { "num": "TASK001", "type": "Story", "assignee": "Dev Name", "title": "Task description", "state": "In Progress" } ], "qa_pairs": [ { "question": "Question they might ask", "answer": "Your answer" } ] } ], "closing_statement": "Thank you for your time..." }</textarea>
-                            <div id="json-err" style="font-size:14px;color:#df0000;margin-top:4px;display:block;"></div>
+                                placeholder='{ "meta": { "account": "..." }, ... }' oninput="handlePaste()"></textarea>
+                            <div id="json-err" style="font-size:14px;color:#df0000;margin-top:4px;display:none;"></div>
                         </div>
                     </div>
         </aside>

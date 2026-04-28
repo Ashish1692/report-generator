@@ -1,19 +1,17 @@
 // ════════════════════════════════════════════════════
 //  UI Functions
 // ════════════════════════════════════════════════════
+/**
+ * Clear All Function
+ */
 function clearAll() {
-    currentData = null;
-    lastBlob = null;
-    document.getElementById('json-ta').value = '';
-    document.getElementById('json-err').style.display = 'none';
-    document.getElementById('val-panel').classList.remove('show');
-    document.getElementById('preview-empty').style.display = 'flex';
-    document.getElementById('preview-content').style.display = 'none';
-    document.getElementById('preview-content').innerHTML = '';
-    document.getElementById('json-view').innerHTML = '<div class="json-empty">No JSON loaded yet.</div>';
-    document.getElementById('ban-ok').classList.remove('show');
-    document.getElementById('ban-err').classList.remove('show');
-    updateGenButton();
+        document.getElementById('json-ta').value = "";
+        document.getElementById('json-view').innerHTML = "";
+        document.getElementById('json-err').style.display = "none";
+        // Reset preview states
+        document.getElementById('preview-empty').style.display = 'block';
+        document.getElementById('preview-content').style.display = 'none';
+        currentData = null;
 }
 
 function updateGenButton() {
@@ -28,21 +26,36 @@ function renderJsonView(data) {
     document.getElementById('btn-copy-json').style.display = 'block';
 }
 
-function copyJsonToClipboard() {
-    if (!currentData) return;
-    const jsonStr = JSON.stringify(currentData, null, 2);
-    navigator.clipboard.writeText(jsonStr).then(() => {
-        const btn = document.getElementById('btn-copy-json');
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '✓ Copied!';
+/**
+ * Improved Copy JSON function with visual feedback
+ */
+async function copyJsonToClipboard() {
+    const jsonArea = document.getElementById('json-ta');
+    const copyBtn = document.getElementById('btn-copy-json');
+    
+    if (!jsonArea.value) return;
+
+    try {
+        await navigator.clipboard.writeText(jsonArea.value);
+        
+        // Visual feedback
+        const originalText = copyBtn.textContent;
+        copyBtn.textContent = "✅ Copied!";
+        copyBtn.style.backgroundColor = "#188300";
+        
         setTimeout(() => {
-            btn.innerHTML = originalText;
+            copyBtn.textContent = originalText;
+            copyBtn.style.backgroundColor = ""; // Resets to CSS default
         }, 2000);
-    }).catch(err => {
-        console.error('Failed to copy:', err);
-        alert('Failed to copy JSON to clipboard');
-    });
+        
+    } catch (err) {
+        console.error('Failed to copy: ', err);
+        // Fallback for older browsers
+        jsonArea.select();
+        document.execCommand('copy');
+    }
 }
+
 
 function statusBadge(state) {
     var cls = 'status-other';

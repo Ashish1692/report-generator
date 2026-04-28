@@ -1187,3 +1187,40 @@ body {
     background: var(--border);
     border-radius: 3px;
 }
+
+/* AI Assistant Button - Blue Gradient */
+.btn-ai {
+    background: linear-gradient(135deg, #1e52f1 0%, #051a80 100%);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.1s;
+    flex-grow: 1;
+}
+
+.btn-ai:hover {
+    filter: brightness(1.2);
+}
+
+.btn-ai:active {
+    transform: scale(0.98);
+}
+
+/* Updated Copy Button for Sidebar */
+.btn-copy-sidebar {
+    background: #2a3b52;
+    color: #fff;
+    border: 1px solid #3d4f6a;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.btn-copy-sidebar:hover {
+    background: #364a68;
+}
