@@ -55,8 +55,3 @@ code[class*=language-], pre[class*=language-]{font-size: 14px !important;}
     background: #444c56;
     color: #ffffff;
 }
-
-/* Ensure the pre block doesn't overlap the button's area if possible */
-pre {
-    padding-top: 30px !important; /* Makes room for the button */
-}
