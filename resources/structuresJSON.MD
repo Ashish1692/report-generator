@@ -209,81 +209,103 @@
 }
 ```
 
-### Story Design / Technical Approach
+### Technical Approach
 ```json
 {
-  "story_id": "[String: STRY ID]",
-  "title": "[String: Descriptive title of the feature/fix]",
-  "requested_by": "[String: Customer or Stakeholder name]",
-  "product_owner": "[String: PO name]",
-  "created_date": "[String: Date]",
-  "author": "[String: Name of person who wrote the design]",
-
-  "summary": "[String: High-level overview of the goal]",
-  "in_scope": ["[String: Specific feature or requirement included]"],
-  "out_of_scope": ["[String: Explicitly excluded items]"],
-  "assumptions": ["[String: Conditions assumed to be true]"],
-
-  "acceptance_criteria": [
-    "[String: Measurable condition for completion]"
-  ],
-
-  "design": {
-    "overview": "[String: Brief technical narrative of the solution]"
-  },
-
-  "data_model_changes": [
-    { 
-      "table": "[String: DB Table Name]", 
-      "change": "[String: New field, New table, or Modification]", 
-      "details": "[String: Field names, types, or mapping details]" 
-    }
-  ],
-
-  "implementation_components": [
-    { 
-      "type": "[String: e.g., Flow, Business Rule, Script Include]", 
-      "name": "[String: Technical Name]", 
-      "description": "[String: What this component does]" 
-    }
-  ],
-
-  "security": [
-    { 
-      "item": "[String: e.g., ACL, Role, Query Business Rule]", 
-      "details": "[String: Permissions and logic]" 
-    }
-  ],
-
-  "integrations": [
-    { 
-      "system": "[String: External system name]", 
-      "details": "[String: API info, authentication, or payload details]" 
-    }
-  ],
-
-  "testing": {
-    "test_cases": [
-      { 
-        "id": "[String: TC01]", 
-        "scenario": "[String: What is being tested]", 
-        "expected": "[String: Success condition]" 
-      }
+  "account": "[String] Name of the account, assignment group, or department",
+  "task_num": "[String] Unique identifier for the ticket or task (e.g., INC0000000)",
+  "title": "[String] Clear, descriptive title of the initiative or task",
+  "prepared_by": "[String] Name of the person who authored this document",
+  "developer": "[String] Name of the developer or engineer assigned to the task",
+  "date": "[String] Date of document creation or last update (e.g., Month DD, YYYY)",
+  "status": "[String] Current state of the document or project (e.g., Under Review, Approved, Draft)",
+  "version": "[String] Document version number (e.g., v1.0, v1.1)",
+  "problem_statement": "[String] Comprehensive description of the core issue or pain point being addressed",
+  "objective": "[String] The primary goal or expected outcome of this initiative",
+  "background": "[String] Context, history, or triage details leading up to this proposed work",
+  "scope": {
+    "in_scope": [
+      "[String] Specific deliverable, action, or feature included in the project scope",
+      "[String] Another in-scope item"
+    ],
+    "out_of_scope": [
+      "[String] Specific item, feature, or action explicitly excluded from this project",
+      "[String] Another out-of-scope item"
+    ],
+    "dependencies": [
+      "[String] External requirement, clarification, or prerequisite needed to complete the work"
     ]
   },
-
-  "deployment_notes": ["[String: Update set names or special migration steps]"],
-  "risks": [
-    { 
-      "description": "[String: What could go wrong]", 
-      "impact": "[String: High/Med/Low]", 
-      "mitigation": "[String: How we avoid it]" 
+  "current_state": "[String] Description of the existing process, workflow, or system behavior before changes",
+  "proposed_solution": "[String] Detailed overview of the intended fix, architecture, or new workflow",
+  "technical_spec": {
+    "platform": "[String] Target platform, application, or version (e.g., ServiceNow - Washington DC)",
+    "components": [
+      {
+        "type": "[String] Type of technical component (e.g., Flow, Table, Script Include)",
+        "name": "[String] Name of the specific component",
+        "table": "[String] Database table associated with the component",
+        "description": "[String] Purpose and function of this component within the solution",
+        "is_oob": "[String] Indicates if the component is Out-of-Box (OOB), Modified OOB, or Custom"
+      }
+    ],
+    "data_flow": "[String] Step-by-step sequence of how data or processes move through the proposed system",
+    "roles_and_access": "[String] Required user roles, groups, or permissions for the solution to function",
+    "integrations": "[String] Any third-party systems, APIs, or internal tools connected to this workflow",
+    "known_constraints": "[String] Technical limitations, missing documentation, or known roadblocks"
+  },
+  "alternatives_considered": [
+    {
+      "option": "[String] Name of the alternative approach that was evaluated",
+      "description": "[String] Brief summary of what this alternative entailed",
+      "reason_rejected": "[String] Justification for why this alternative was not selected"
     }
   ],
-  "open_questions": ["[String: Unresolved design questions]"]
+  "test_plan": [
+    {
+      "scenario": "[String] Description of the specific test case or user action",
+      "expected_result": "[String] The anticipated outcome if the solution functions correctly",
+      "environment": "[String] The environment where testing will occur (e.g., DEV, TEST, UAT)"
+    }
+  ],
+  "acceptance_criteria": [
+    "[String] Specific, measurable condition that must be met for the work to be considered complete",
+    "[String] Another acceptance criterion"
+  ],
+  "rollback_plan": "[String] Detailed steps to revert the system to its previous state if the deployment fails",
+  "timeline": {
+    "estimate": "[String] Estimated total time or effort required (e.g., 3 days dev, 2 days test)",
+    "dev_start": "[String] Target or actual development start date (YYYY-MM-DD)",
+    "target_test": "[String] Target date to deploy to the testing environment (YYYY-MM-DD)",
+    "target_prod": "[String] Target date for production deployment (YYYY-MM-DD)",
+    "notes": "[String] Any assumptions or conditions affecting the timeline"
+  },
+  "open_items": [
+    {
+      "item": "[String] Description of an unresolved question, task, or blocker",
+      "owner": "[String] Person or team responsible for resolving this item",
+      "due": "[String] Deadline for resolving the item (YYYY-MM-DD)"
+    }
+  ],
+  "approvals": [
+    {
+      "name": "[String] Name of the required approver",
+      "role": "[String] Title or role of the approver (e.g., PM, Developer, QA)",
+      "status": "[String] Current approval status (e.g., Approved, Pending, Rejected)",
+      "date": "[String] Date the approval status was updated (YYYY-MM-DD or leave blank if pending)"
+    }
+  ],
+  "callouts": [
+    {
+      "dev": "[String] Name of the specific developer, team member, or stakeholder",
+      "items": [
+        "[String] Direct question, action item, or request for clarification directed at this person"
+      ]
+    }
+  ],
+  "notes": "[String] General administrative updates, active incident associations, or miscellaneous comments"
 }
 ```
-
 ### Project Summary
 ```json
 {

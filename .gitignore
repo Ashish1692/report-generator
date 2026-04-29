@@ -6,3 +6,4 @@ docx-template-guide.md
 *.text
 imp_points.mkd
 preview.mkd
+*.min.js

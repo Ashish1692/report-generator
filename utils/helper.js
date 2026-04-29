@@ -9,7 +9,6 @@ function getModeHandler(mode) {
         taskbrief: { generate: generateTaskBrief, render: renderTaskBriefPreview },
         projectsummary: { generate: generateProjectSummary, render: renderProjectSummaryPreview },
         deploymentrunbook: { generate: generateDeploymentRunbook, render: renderDeploymentRunbookPreview },
-        storydesign: { generate: generateStoryDesign, render: renderStoryDesignPreview },
         incidentsummary: { generate: generateIncidentSummary, render: renderIncidentSummaryPreview },
         signoff: { generate: generateSignOffRequest, render: renderSignOffPreview },
         bulkapproval: { generate: generateBulkApprovalRequest, render: renderBulkApprovalPreview }
@@ -28,7 +27,6 @@ const AUTO_DETECTION_RULES = [
     { mode: 'deploymentrunbook', check: d => d.deployment_steps && d.ops_lead },
     { mode: 'bulkapproval', check: d => d.approval_tasks && d.project_name },
     { mode: 'projectsummary', check: d => d.project_name && !d.deployment_steps && !d.approval_tasks },
-    { mode: 'storydesign', check: d => d.story_id },
     { mode: 'incidentsummary', check: d => d.incident_number },
     { mode: 'signoff', check: d => d.signoff_id && d.objective }
 ];
