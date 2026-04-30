@@ -124,7 +124,7 @@ function openAiGem() {
     const templateName = MODE_TO_TEMPLATE_NAME[currentMode] || "the appropriate";
 
     // 2. Construct the prompt
-    const prompt = `Use ${templateName} template.`;
+    const prompt = `Use "${templateName}" template.\n\n`;
 
     // 3. Copy to clipboard
     navigator.clipboard.writeText(prompt).then(() => {
