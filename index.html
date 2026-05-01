@@ -96,15 +96,6 @@
                 <button class="tab-btn active" data-tab="preview" onclick="switchTab('preview')">Preview</button>
                 <button class="tab-btn" data-tab="json" onclick="switchTab('json')">JSON</button>
                 <button class="tab-btn" data-tab="masterjson" onclick="switchTab('masterjson')">Schema Guide</button>
-                <button class="tab-btn" data-tab="editor" onclick="switchTab('editor')">Rich Editor</button>
-                <div style="flex:1;"></div>
-                <!-- New Email Button -->
-                <button class="btn-copy-sidebar" id="btn-copy-email" onclick="copyAsSmartEmail()"
-                    style="background:#4f46e5; color:white; margin-right:8px; display:none; border:none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: 500;">
-                    📧 Copy for Email
-                </button>
-
-
                 <div style="flex:1;"></div>
                 <div>
                     <button class="btn-gen primary" id="btn-gen" disabled onclick="generate()">
@@ -171,54 +162,6 @@
                     <hr />
                     <div id="content" class="markdown-body">Loading...</div>
                 </div>
-                <div class="tab-panel" id="panel-editor">
-                    <div class="editor-layout">
-                        <!-- Toolbar -->
-                        <div class="editor-toolbar">
-                            <div class="toolbar-group">
-                                <button onclick="injectTag('h2')" title="Heading">H2</button>
-                                <button onclick="injectTag('b')" title="Bold"><b>B</b></button>
-                                <button onclick="injectTag('u')" title="Underline"><u>U</u></button>
-                                <button onclick="injectTag('li')" title="List Item">• List</button>
-                            </div>
-
-                            <div class="toolbar-group">
-                                <!-- These snippets use the exact classes from your CSS -->
-                                <button onclick="injectSnippet('callout-blue')">🟦 Note</button>
-                                <button onclick="injectSnippet('callout-green')">🟩 Success</button>
-                                <button onclick="injectSnippet('callout-amber')">🟧 Warning</button>
-                                <button onclick="injectSnippet('table')">📊 Table</button>
-                            </div>
-
-                            <div style="flex:1"></div>
-
-                            <button onclick="clearEditor()" style="color: #df0000;">Clear</button>
-                            <button class="btn-refresh" onclick="syncEditorFromPreview()">🔄 Reset from Preview</button>
-                        </div>
-
-                        <div class="editor-split">
-                            <div class="editor-pane">
-                                <div class="pane-label">HTML SOURCE (Syntax Highlighting)</div>
-                                <div class="code-editor-container" id="editor-wrapper">
-                                    <!-- Floating Copy Button -->
-                                    <button class="copy-code-btn" onclick="copyRawCode()">Copy</button>
-
-                                    <!-- The display layer (Prism) -->
-                                    <pre id="editor-highlight" aria-hidden="true" class="language-markup"><code id="editor-code" class="language-markup"></code></pre>
-
-                                    <!-- The input layer (Transparent Textarea) -->
-                                    <textarea id="editor-html-input" spellcheck="false" oninput="handleEditorInput()"
-                                        onscroll="syncScroll()" placeholder="Paste or type HTML here..."></textarea>
-                                </div>
-                            </div>
-
-                            <div class="preview-pane">
-                                <div class="pane-label">LIVE PREVIEW</div>
-                                <iframe id="editor-live-frame"></iframe>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </main>
     </div>
@@ -236,7 +179,6 @@
     <script src="./core/uiFunctions.js"></script>
     <script src="./core/OOB_main.js"></script>
     <script src="./core/OOB_template.js"></script>
-    <script src="./utils/editor.js"></script>
     <script src="./utils/json.js"></script>
     <script src="./utils/helper.js"></script>
     <script src="./utils/template.js"></script>
