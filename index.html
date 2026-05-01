@@ -54,6 +54,12 @@
                                 title="Sign-Off Request">✅ Sign-Off Request</button>
                             <button class="mode-tab" data-mode="bulkapproval" onclick="switchMode('bulkapproval')"
                                 title="Bulk Approval">✅ Bulk Approval</button>
+                            <button class="mode-tab" data-mode="devhandover" onclick="switchMode('devhandover')"
+                                title="Developer Handover">✅ Developer Handover</button>
+                            <button class="mode-tab" data-mode="kbarticle" onclick="switchMode('kbarticle')"
+                                title="Knowledge Base Article">✅ KB Article</button>
+                            <button class="mode-tab" data-mode="techdoc" onclick="switchMode('techdoc')"
+                                title="Technical Document">✅ Tech Doc</button>
                         </div>
 
                         <div style="margin-top: 16px; display: none;">
@@ -97,7 +103,8 @@
                 <button class="tab-btn" data-tab="masterjson" onclick="switchTab('masterjson')">Schema Guide</button>
                 <div style="flex:1;"></div>
                 <div>
-                    <button style="display: none !important;" class="btn-gen primary" id="btn-gen" disabled onclick="generate()">
+                    <button style="display: none !important;" class="btn-gen primary" id="btn-gen" disabled
+                        onclick="generate()">
                         <div class="spinner"></div>
                         <span class="btn-label" id="btn-label">⚡ Generate Document</span>
                     </button>

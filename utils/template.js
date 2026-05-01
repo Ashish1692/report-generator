@@ -960,3 +960,423 @@ async function generateIncidentSummary(data) {
         filename: (data.incident_number || "Incident") + "_Resolution_Summary.docx"
     };
 }
+
+async function generateDevHandover(data) {
+    const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, BorderStyle, WidthType, ShadingType } = getDocx();
+    const C = docxColors();
+    const CW = 9360;
+
+    const children = [];
+
+    // --- TITLE BLOCK (As requested in Layout Mockup) ---
+    children.push(new Table({
+        width: { size: CW, type: WidthType.DXA },
+        rows: [new TableRow({
+            children: [new TableCell({
+                shading: { fill: '1e293b', type: ShadingType.CLEAR },
+                margins: { top: 300, bottom: 300, left: 400, right: 400 },
+                children: [
+                    new Paragraph({ children: [new TextRun({ text: "WORK HANDOVER", bold: true, color: C.WHITE, size: 32 })] }),
+                    new Paragraph({ children: [new TextRun({ text: safeStr(data.project_title || 'ServiceNow Development'), color: 'AECBF0', size: 18 })] }),
+                    sp(200, 100),
+                    new Paragraph({ children: [new TextRun({ text: `Record: ${safeStr(data.record_id)} | Dev: ${safeStr(data.developer_name)}`, color: C.WHITE, size: 18 })] }),
+                    new Paragraph({ children: [new TextRun({ text: `Next Owner: ${safeStr(data.next_owner)} | Date: ${safeStr(data.handover_date)}`, color: 'C0D8F5', size: 18 })] }),
+                    new Paragraph({ children: [new TextRun({ text: `Status: ${safeStr(data.overall_status)}`, color: C.WHITE, bold: true, size: 20 })] })
+                ]
+            })]
+        })]
+    }));
+
+    // 1. Work Inventory (At a Glance)
+    children.push(h2("1. Work Inventory"));
+    children.push(new Table({
+        width: { size: CW, type: WidthType.DXA },
+        rows: [
+            new TableRow({ children: [hdrCell("Item", C.NAVY, C.WHITE, 3000), hdrCell("Status", C.NAVY, C.WHITE, 1500), hdrCell("% Done", C.NAVY, C.WHITE, 1000), hdrCell("Blocked?", C.NAVY, C.WHITE, 1360)] }),
+            ...(data.work_inventory || []).map((item, i) => new TableRow({
+                children: [dataCell(item.title, i % 2 ? C.WHITE : C.LIGHT_GRAY, C.NAVY, 3000, true), dataCell(item.status, i % 2 ? C.WHITE : C.LIGHT_GRAY, C.GRAY, 1500), dataCell(item.percent, i % 2 ? C.WHITE : C.LIGHT_GRAY, C.GRAY, 1000), dataCell(item.is_blocked ? "YES" : "No", item.is_blocked ? C.LIGHT_RED : (i % 2 ? C.WHITE : C.LIGHT_GRAY), item.is_blocked ? C.RED : C.GRAY, 1360)]
+            }))
+        ]
+    }));
+
+    // 2. Completed Work (Detailed Narrative)
+    children.push(h2("2. Completed Work (So Far)"));
+    (data.completed_work || []).forEach(section => {
+        children.push(para(section.sub_title, true, C.NAVY, 20));
+        (section.details || []).forEach(d => children.push(new Paragraph({ bullet: { level: 0 }, children: [new TextRun({ text: safeStr(d), size: 18, color: C.GRAY })] })));
+        if (section.notes) children.push(new Paragraph({ children: [new TextRun({ text: `Note: ${section.notes}`, italic: true, size: 18, color: C.BLUE })] }));
+        sp(100, 100);
+    });
+
+    // 3. Remaining Work (To Do)
+    children.push(h2("3. Remaining Work"));
+    (data.remaining_work || []).forEach(task => {
+        children.push(new Table({
+            width: { size: CW, type: WidthType.DXA },
+            rows: [new TableRow({
+                children: [new TableCell({
+                    borders: { left: { style: BorderStyle.SINGLE, size: 20, color: C.TEAL } },
+                    margins: { left: 200, top: 100, bottom: 100 },
+                    children: [
+                        new Paragraph({ children: [new TextRun({ text: `[${task.priority}] ${task.title}`, bold: true, color: C.NAVY, size: 19 })] }),
+                        para(`Requirements: ${task.todo}`, false, C.GRAY, 18),
+                        para(`Blocked By: ${task.blocked_by || 'None'}`, !!task.blocked_by, task.blocked_by ? C.RED : C.GRAY, 17)
+                    ]
+                })]
+            })]
+        }));
+        sp(100, 100);
+    });
+
+    // 4. Blockers & Issues
+    children.push(h2("4. Blockers & Issues"));
+    children.push(new Table({
+        width: { size: CW, type: WidthType.DXA },
+        rows: [
+            new TableRow({ children: [hdrCell("Issue", C.RED, C.WHITE, 3000), hdrCell("Impact", C.RED, C.WHITE, 2000), hdrCell("Workaround", C.RED, C.WHITE, 4360)] }),
+            ...(data.blockers || []).map(b => new TableRow({ children: [dataCell(b.issue, C.WHITE, C.RED, 3000, true), dataCell(b.impact, C.WHITE, C.GRAY, 2000), dataCell(b.workaround, C.WHITE, C.GRAY, 4360)] }))
+        ]
+    }));
+
+    // 5. People & Escalation
+    children.push(h2("5. People & Escalation"));
+    children.push(new Table({
+        width: { size: CW, type: WidthType.DXA },
+        rows: [
+            new TableRow({ children: [hdrCell("Role", C.NAVY, C.WHITE, 2000), hdrCell("Name", C.NAVY, C.WHITE, 2000), hdrCell("Knowledge / Escalation", C.NAVY, C.WHITE, 5360)] }),
+            ...(data.contacts || []).map(c => new TableRow({ children: [dataCell(c.role, C.WHITE, C.NAVY, 2000, true), dataCell(c.name, C.WHITE, C.GRAY, 2000), dataCell(c.info, C.WHITE, C.GRAY, 5360)] }))
+        ]
+    }));
+
+    // 6. Resources & Links (Bullet list)
+    children.push(h2("6. Resources & Links"));
+    (data.resources || []).forEach(r => {
+        children.push(para(r.category, true, C.NAVY, 18));
+        (r.links || []).forEach(l => children.push(new Paragraph({ bullet: { level: 0 }, children: [new TextRun({ text: safeStr(l), color: C.BLUE, size: 17 })] })));
+    });
+
+    // 7. Environment Details
+    children.push(h2("7. Environment Details"));
+    children.push(new Table({
+        width: { size: CW, type: WidthType.DXA },
+        rows: Object.entries(data.environment || {}).map(([key, val]) => new TableRow({
+            children: [dataCell(key, C.LIGHT_GRAY, C.NAVY, 2500, true), dataCell(val, C.WHITE, C.GRAY, 6860)]
+        }))
+    }));
+
+    // 8. Risk & Difficulty Summary
+    children.push(h2("8. Risk & Difficulty Summary"));
+    children.push(new Table({
+        width: { size: CW, type: WidthType.DXA },
+        rows: [
+            new TableRow({ children: [hdrCell("Component", C.BLUE, C.WHITE, 3000), hdrCell("Diff", C.BLUE, C.WHITE, 1000), hdrCell("Risk", C.BLUE, C.WHITE, 1000), hdrCell("Mitigation", C.BLUE, C.WHITE, 4360)] }),
+            ...(data.risks || []).map(r => new TableRow({ children: [dataCell(r.item, C.WHITE, C.NAVY, 3000), dataCell(r.diff, C.WHITE, C.GRAY, 1000), dataCell(r.risk, C.WHITE, C.GRAY, 1000), dataCell(r.mitigation, C.WHITE, C.GRAY, 4360)] }))
+        ]
+    }));
+
+    // 9. Next Steps for New Owner
+    children.push(h2("9. Next Steps for New Owner", C.TEAL));
+    children.push(para("Day 1 Checklist:", true, C.NAVY, 18));
+    (data.next_steps_day1 || []).forEach(s => children.push(new Paragraph({ bullet: { level: 0 }, children: [new TextRun({ text: safeStr(s), size: 18 })] })));
+    children.push(para("Day 2-3 Tasks:", true, C.NAVY, 18));
+    (data.next_steps_days_rest || []).forEach(s => children.push(new Paragraph({ bullet: { level: 0 }, children: [new TextRun({ text: safeStr(s), size: 18 })] })));
+
+    const doc = new Document({ sections: [{ properties: { page: { margin: { top: 1080, right: 1080, bottom: 1080, left: 1080 } } }, children }] });
+    const blob = await Packer.toBlob(doc);
+    return { blob, filename: `Handover_${data.record_id}.docx` };
+}
+
+async function generateKBArticle(data) {
+    const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, BorderStyle, WidthType, ShadingType } = getDocx();
+    const C = docxColors();
+    const CW = 9360;
+
+    const children = [];
+
+    // --- TITLE BLOCK ---
+    children.push(new Table({
+        width: { size: CW, type: WidthType.DXA },
+        rows: [new TableRow({
+            children: [new TableCell({
+                shading: { fill: '334155', type: ShadingType.CLEAR },
+                margins: { top: 300, bottom: 300, left: 400, right: 400 },
+                children: [
+                    new Paragraph({ children: [new TextRun({ text: "KNOWLEDGE ARTICLE", bold: true, color: C.WHITE, size: 32 })] }),
+                    new Paragraph({ children: [new TextRun({ text: `Category: ${safeStr(data.category)} | System: ${safeStr(data.system)}`, color: 'AECBF0', size: 18 })] }),
+                    sp(200, 100),
+                    new Paragraph({ children: [new TextRun({ text: `KB ID: ${safeStr(data.kb_id)} | Owner: ${safeStr(data.owner)}`, color: C.WHITE, size: 18 })] }),
+                    new Paragraph({ children: [new TextRun({ text: `Last Updated: ${safeStr(data.last_updated)} | Status: ${safeStr(data.overall_status)}`, color: 'C0D8F5', size: 18 })] }),
+                    sp(100, 0),
+                    new Paragraph({ children: [new TextRun({ text: `Severity: ${safeStr(data.severity)} | Frequency: ${safeStr(data.frequency)}`, color: C.WHITE, size: 18 })] })
+                ]
+            })]
+        })]
+    }));
+
+    // 1. Issue Summary (Plain Language)
+    children.push(h2("1. Issue Summary (Plain Language)"));
+    children.push(para("What is happening?", true, C.NAVY, 20));
+    children.push(para(data.summary_what, false, C.GRAY, 18));
+    children.push(para("Who is affected?", true, C.NAVY, 20));
+    (data.summary_who || []).forEach(who => children.push(new Paragraph({ bullet: { level: 0 }, children: [new TextRun({ text: safeStr(who), size: 18 })] })));
+
+    // 2. Technical Description
+    children.push(h2("2. Technical Description"));
+    children.push(para("Root Cause:", true, C.NAVY, 18));
+    children.push(para(data.technical_root_cause, false, C.GRAY, 18));
+    if (data.technical_error_log) {
+        children.push(para("Error Log:", true, C.NAVY, 18));
+        children.push(new Table({ width: { size: CW, type: WidthType.DXA }, rows: [new TableRow({ children: [new TableCell({ shading: { fill: C.LIGHT_GRAY }, margins: { left: 100, right: 100 }, children: [new Paragraph({ children: [new TextRun({ text: data.technical_error_log, font: 'Courier New', size: 16 })] })] })] })] }));
+    }
+    children.push(para(`Related Update Set: ${data.technical_update_set || 'N/A'}`, true, C.GRAY, 17));
+
+    // 3. Impact Assessment
+    children.push(h2("3. Impact Assessment"));
+    children.push(new Table({
+        width: { size: CW, type: WidthType.DXA },
+        rows: [
+            new TableRow({ children: [hdrCell("Impact Type", C.NAVY, C.WHITE, 2500), hdrCell("Description", C.NAVY, C.WHITE, 6860)] }),
+            ...(data.impact_assessment || []).map(i => new TableRow({ children: [dataCell(i.type, C.WHITE, C.NAVY, 2500, true), dataCell(i.desc, C.WHITE, C.GRAY, 6860)] }))
+        ]
+    }));
+
+    // 4. Resolution Steps
+    children.push(h2("4. Resolution Steps"));
+    children.push(para("Immediate Fix (Short-Term):", true, C.GREEN, 18));
+    (data.res_short_term || []).forEach((s, i) => children.push(para(`${i + 1}. ${s}`, false, C.GRAY, 18)));
+    sp(100, 100);
+    children.push(para("Permanent Fix:", true, C.BLUE, 18));
+    (data.res_permanent || []).forEach((s, i) => children.push(para(`${i + 1}. ${s}`, false, C.GRAY, 18)));
+
+    // 5. Escalation
+    children.push(h2("5. Escalation"));
+    children.push(new Table({
+        width: { size: CW, type: WidthType.DXA },
+        rows: [
+            new TableRow({ children: [hdrCell("Scenario", C.NAVY, C.WHITE, 3000), hdrCell("Contact", C.NAVY, C.WHITE, 3000), hdrCell("Channel", C.NAVY, C.WHITE, 3360)] }),
+            ...(data.escalation_path || []).map(e => new TableRow({ children: [dataCell(e.scenario, C.WHITE, C.NAVY, 3000), dataCell(e.contact, C.WHITE, C.GRAY, 3000), dataCell(e.channel, C.WHITE, C.GRAY, 3360)] }))
+        ]
+    }));
+
+    // 6. Occurrence History
+    children.push(h2("6. Occurrence History"));
+    children.push(new Table({
+        width: { size: CW, type: WidthType.DXA },
+        rows: [
+            new TableRow({ children: [hdrCell("Date", C.NAVY, C.WHITE, 1200), hdrCell("Record ID", C.NAVY, C.WHITE, 1200), hdrCell("Type", C.NAVY, C.WHITE, 1200), hdrCell("Env", C.NAVY, C.WHITE, 800), hdrCell("Resolution Applied", C.NAVY, C.WHITE, 4960)] }),
+            ...(data.occurrence_history || []).map(h => new TableRow({ children: [dataCell(h.date, C.WHITE, C.GRAY, 1200), dataCell(h.id, C.WHITE, C.NAVY, 1200, true), dataCell(h.type, C.WHITE, C.GRAY, 1200), dataCell(h.env, C.WHITE, C.GRAY, 800), dataCell(h.res, C.WHITE, C.GRAY, 4960)] }))
+        ]
+    }));
+
+    // 7. Common Triggers
+    children.push(h2("7. Common Triggers"));
+    (data.triggers || []).forEach(t => children.push(new Paragraph({ bullet: { level: 0 }, children: [new TextRun({ text: safeStr(t), size: 18 })] })));
+
+    // 8. Affected Personas
+    children.push(h2("8. Affected Personas"));
+    children.push(new Table({
+        width: { size: CW, type: WidthType.DXA },
+        rows: [
+            new TableRow({ children: [hdrCell("Persona", C.NAVY, C.WHITE, 2500), hdrCell("How They Are Impacted", C.NAVY, C.WHITE, 6860)] }),
+            ...(data.personas || []).map(p => new TableRow({ children: [dataCell(p.name, C.WHITE, C.NAVY, 2500, true), dataCell(p.impact, C.WHITE, C.GRAY, 6860)] }))
+        ]
+    }));
+
+    // 9. Related Records
+    (data.related_records || []).forEach(r => {
+        children.push(para(r.category, true, C.NAVY, 18));
+        (r.links || []).forEach(l => children.push(new Paragraph({ bullet: { level: 0 }, children: [new TextRun({ text: safeStr(l), color: C.BLUE, size: 17 })] })));
+    });
+
+    // 10. Monitoring & Prevention
+    children.push(h2("10. Monitoring & Prevention"));
+    (data.prevention_steps || []).forEach(step => children.push(new Paragraph({ bullet: { level: 0 }, children: [new TextRun({ text: safeStr(step), size: 18 })] })));
+
+    // 11. Status
+    children.push(h2("11. Status"));
+    const flags = ["Known Error", "Workaround Available", "Permanent Fix Released", "Monitoring Active"];
+    flags.forEach(f => {
+        const checked = (data.status_flags || []).includes(f);
+        children.push(new Paragraph({ children: [new TextRun({ text: checked ? "☑ " : "☐ ", size: 20, bold: true }), new TextRun({ text: f, size: 18 })] }));
+    });
+
+    const doc = new Document({ sections: [{ properties: { page: { margin: { top: 1080, right: 1080, bottom: 1080, left: 1080 } } }, children }] });
+    const blob = await Packer.toBlob(doc);
+    return { blob, filename: `${data.kb_id}.docx` };
+}
+
+async function generateTechnicalSpec(data) {
+    const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, BorderStyle, WidthType, ShadingType } = getDocx();
+    const C = docxColors();
+    const CW = 9360;
+    const bdr = { style: BorderStyle.SINGLE, size: 1, color: C.GRAY };
+
+    // Helper for code snippets
+    const codeCell = (text) => new TableCell({
+        shading: { fill: 'F1F5F9', type: ShadingType.CLEAR },
+        margins: { top: 100, bottom: 100, left: 200, right: 200 },
+        children: [new Paragraph({ children: [new TextRun({ text: safeStr(text), font: 'Courier New', size: 16, color: C.NAVY })] })]
+    });
+
+    const children = [];
+
+    // --- TITLE BLOCK (Professional Header) ---
+    children.push(new Table({
+        width: { size: CW, type: WidthType.DXA },
+        rows: [new TableRow({
+            children: [new TableCell({
+                shading: { fill: '0F172A', type: ShadingType.CLEAR },
+                margins: { top: 400, bottom: 400, left: 400, right: 400 },
+                children: [
+                    new Paragraph({ children: [new TextRun({ text: "TECHNICAL SPECIFICATION", bold: true, color: C.WHITE, size: 36 })] }),
+                    new Paragraph({ children: [new TextRun({ text: safeStr(data.technical_title), color: 'AECBF0', size: 22 })] }),
+                    sp(200, 0),
+                    new Paragraph({ children: [new TextRun({ text: `Version: ${safeStr(data.version)} | Date: ${safeStr(data.date)} | Author: ${safeStr(data.author)}`, color: C.WHITE, size: 17 })] }),
+                    new Paragraph({ children: [new TextRun({ text: `Records: ${safeStr(data.related_records)}`, color: 'C0D8F5', size: 17 })] })
+                ]
+            })]
+        })]
+    }));
+
+    // 1. REQUIREMENTS & CRITERIA
+    if ((data.requirements || []).length) {
+        children.push(h2('1. REQUIREMENTS & CRITERIA'));
+        // Using the provided reference for nested requirements
+        children.push(...renderNestedList(data.requirements, Paragraph, TextRun, C));
+    }
+
+    // 2. OVERVIEW
+    children.push(h2('2. OVERVIEW'));
+    children.push(para('2.1 Type of Change', true, C.NAVY, 19));
+    const types = ["New Configuration", "Update to Existing Configuration", "New Script Include", "Bug Fix", "Enhancement"];
+    types.forEach(t => {
+        const isChecked = (data.change_types || []).includes(t);
+        children.push(new Paragraph({ children: [new TextRun({ text: isChecked ? "☑ " : "☐ ", bold: true, size: 18 }), new TextRun({ text: t, size: 18 })] }));
+    });
+
+    children.push(sp(100, 0));
+    children.push(para('2.2 Environment Details', true, C.NAVY, 19));
+    children.push(new Table({
+        width: { size: CW, type: WidthType.DXA },
+        rows: [
+            new TableRow({ children: [hdrCell("Environment", C.NAVY, C.WHITE, 2000), hdrCell("Status", C.NAVY, C.WHITE, 1500), hdrCell("Update Set", C.NAVY, C.WHITE, 2500), hdrCell("Notes", C.NAVY, C.WHITE, 3360)] }),
+            ...(data.environments || []).map(env => new TableRow({
+                children: [dataCell(env.name, C.WHITE, C.NAVY, 2000, true), dataCell(env.status, C.WHITE, C.GRAY, 1500), dataCell(env.update_set, C.WHITE, C.GRAY, 2500), dataCell(env.notes, C.WHITE, C.GRAY, 3360)]
+            }))
+        ]
+    }));
+
+    children.push(sp(100, 0));
+    children.push(para('2.3 Affected Components', true, C.NAVY, 19));
+    (data.components || []).forEach(c => children.push(new Paragraph({ bullet: { level: 0 }, children: [new TextRun({ text: safeStr(c), size: 18 })] })));
+
+    // 3. IMPLEMENTATION DETAILS
+    children.push(h2('3. IMPLEMENTATION DETAILS / PROCEDURE'));
+    (data.implementation_steps || []).forEach((step, idx) => {
+        children.push(h2(`3.${idx + 1} ${step.title}`, C.NAVY));
+        children.push(para(`Location: ${step.location}`, true, C.GRAY, 16));
+
+        // Check if details is an array of rich objects
+        if (Array.isArray(step.details)) {
+            step.details.forEach(block => {
+                if (block.type === 'p') {
+                    // Supports bold/italic via text runs
+                    children.push(new Paragraph({
+                        spacing: { before: 120, after: 120 },
+                        children: [new TextRun({
+                            text: safeStr(block.text),
+                            bold: !!block.bold,
+                            italic: !!block.italic,
+                            size: 18,
+                            color: C.GRAY
+                        })]
+                    }));
+                }
+                else if (block.type === 'list') {
+                    // Standard bullet list
+                    block.items.forEach(item => {
+                        children.push(new Paragraph({
+                            bullet: { level: 0 },
+                            children: [new TextRun({ text: safeStr(item), size: 18, color: C.GRAY })]
+                        }));
+                    });
+                }
+                else if (block.type === 'nested_list') {
+                    // Uses the renderNestedList helper from your reference
+                    children.push(...renderNestedList(block.items, Paragraph, TextRun, C));
+                }
+            });
+        } else {
+            // Fallback for simple string descriptions
+            children.push(para(step.description, false, C.GRAY, 18));
+        }
+
+        if (step.snippet) {
+            children.push(new Table({
+                width: { size: CW, type: WidthType.DXA },
+                rows: [new TableRow({ children: [codeCell(step.snippet)] })]
+            }));
+        }
+        sp(200, 200);
+    });
+
+    children.push(para('3.X Deployment & Rollback', true, C.NAVY, 20));
+    children.push(para('Deployment:', true, C.GRAY, 18));
+    (data.deployment_plan || []).forEach(p => children.push(new Paragraph({ bullet: { level: 0 }, children: [new TextRun({ text: safeStr(p), size: 18 })] })));
+    children.push(para('Rollback Plan:', true, C.RED, 18));
+    children.push(para(data.rollback_plan, false, C.GRAY, 18));
+
+    // 4. RISKS & IMPACT
+    children.push(h2('4. RISKS & IMPACT ANALYSIS'));
+    children.push(new Table({
+        width: { size: CW, type: WidthType.DXA },
+        rows: [
+            new TableRow({ children: [hdrCell("Risk", C.RED, C.WHITE, 3000), hdrCell("Impact", C.RED, C.WHITE, 1500), hdrCell("Mitigation", C.RED, C.WHITE, 4860)] }),
+            ...(data.risks || []).map(r => new TableRow({
+                children: [dataCell(r.risk, C.WHITE, C.RED, 3000, true), dataCell(r.impact, C.WHITE, C.GRAY, 1500), dataCell(r.mitigation, C.WHITE, C.GRAY, 4860)]
+            }))
+        ]
+    }));
+
+    // 5. DEPENDENCIES & 6. ASSUMPTIONS
+    children.push(h2('5. DEPENDENCIES'));
+    (data.dependencies || []).forEach(d => children.push(new Paragraph({ bullet: { level: 0 }, children: [new TextRun({ text: safeStr(d), size: 18 })] })));
+
+    children.push(h2('6. ASSUMPTIONS'));
+    (data.assumptions || []).forEach(a => children.push(new Paragraph({ bullet: { level: 0 }, children: [new TextRun({ text: safeStr(a), size: 18 })] })));
+
+    // 7. RESOURCES
+    children.push(h2('7. RESOURCES'));
+    children.push(new Table({
+        width: { size: CW, type: WidthType.DXA },
+        rows: Object.entries(data.resources || {}).map(([k, v]) => new TableRow({
+            children: [dataCell(k, C.LIGHT_GRAY, C.NAVY, 2500, true), dataCell(v, C.WHITE, C.BLUE, 6860)]
+        }))
+    }));
+
+    // 8. REVISION HISTORY
+    children.push(h2('8. REVISION HISTORY'));
+    children.push(new Table({
+        width: { size: CW, type: WidthType.DXA },
+        rows: [
+            new TableRow({ children: [hdrCell("Ver", C.GRAY, C.WHITE, 800), hdrCell("Date", C.GRAY, C.WHITE, 1500), hdrCell("Author", C.GRAY, C.WHITE, 1500), hdrCell("Change", C.GRAY, C.WHITE, 5560)] }),
+            ...(data.revisions || []).map(rev => new TableRow({
+                children: [dataCell(rev.version, C.WHITE, C.GRAY, 800), dataCell(rev.date, C.WHITE, C.GRAY, 1500), dataCell(rev.author, C.WHITE, C.GRAY, 1500), dataCell(rev.change, C.WHITE, C.GRAY, 5560)]
+            }))
+        ]
+    }));
+
+    // FOOTER
+    children.push(sp(400, 0));
+    children.push(new Paragraph({
+        alignment: 'center',
+        children: [
+            new TextRun({ text: `${safeStr(data.company_name)} – Confidential`, size: 16, color: C.GRAY }),
+            new TextRun({ text: `\rFor Internal / Client Use Only | © ${new Date().getFullYear()}`, size: 16, color: C.GRAY })
+        ]
+    }));
+
+    const doc = new Document({ sections: [{ properties: { page: { margin: { top: 1080, right: 1080, bottom: 1080, left: 1080 } } }, children }] });
+    const blob = await Packer.toBlob(doc);
+    return { blob, filename: `TechSpec_${data.technical_title.replace(/\s+/g, '_')}.docx` };
+}

@@ -11,7 +11,10 @@ function getModeHandler(mode) {
         deploymentrunbook: { generate: generateDeploymentRunbook, render: renderDeploymentRunbookPreview },
         incidentsummary: { generate: generateIncidentSummary, render: renderIncidentSummaryPreview },
         signoff: { generate: generateSignOffRequest, render: renderSignOffPreview },
-        bulkapproval: { generate: generateBulkApprovalRequest, render: renderBulkApprovalPreview }
+        bulkapproval: { generate: generateBulkApprovalRequest, render: renderBulkApprovalPreview },
+        devhandover: { generate: generateDevHandover, render: renderDevHandoverPreview },
+        kbarticle: { generate: generateKBArticle, render: renderKBArticlePreview },
+        techdoc: { generate: generateTechnicalSpec, render: renderTechnicalSpecPreview },
     };
     return handlers[mode];
 }
@@ -28,7 +31,10 @@ const AUTO_DETECTION_RULES = [
     { mode: 'bulkapproval', check: d => d.approval_tasks && d.project_name },
     { mode: 'projectsummary', check: d => d.project_name && !d.deployment_steps && !d.approval_tasks },
     { mode: 'incidentsummary', check: d => d.incident_number },
-    { mode: 'signoff', check: d => d.signoff_id && d.objective }
+    { mode: 'signoff', check: d => d.signoff_id && d.objective },
+    { mode: 'devhandover', check: d => d.work_inventory && d.next_owner },
+    { mode: 'kbarticle', check: d => d.kb_id && d.occurrence_history },
+    { mode: 'techdoc', check: d => d.technical_title && d.implementation_steps },
 ];
 
 async function generate() {

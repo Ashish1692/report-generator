@@ -271,7 +271,7 @@ function renderIncidentSummaryPreview(data) {
 }
 
 // =============================================
-// Recursive List Renderer for Nested Requirements
+// Helper functions for rendering complex nested structures in previews
 // =============================================
 function renderPreviewList(items) {
     if (!items || !items.length) return '';
@@ -297,6 +297,34 @@ function renderPreviewList(items) {
     });
     html += '</ul>';
     return html;
+}
+
+function renderStepDetails(details) {
+    if (!Array.isArray(details)) return `<p>${escHtml(details)}</p>`;
+
+    return details.map(block => {
+        if (block.type === 'p') {
+            const style = `${block.bold ? 'font-weight:bold;' : ''} ${block.italic ? 'font-style:italic;' : ''}`;
+            return `<p style="${style} color:#475569; margin: 8px 0;">${escHtml(block.text)}</p>`;
+        }
+        if (block.type === 'list') {
+            return `<ul style="margin: 8px 0;">${block.items.map(i => `<li>${escHtml(i)}</li>`).join('')}</ul>`;
+        }
+        if (block.type === 'nested_list') {
+            // Recursive helper for nested lists in HTML
+            const renderHtmlList = (items) => `
+                <ul style="margin: 4px 0;">
+                    ${items.map(i => `
+                        <li>
+                            ${escHtml(i.text || i)}
+                            ${i.sub_items ? renderHtmlList(i.sub_items) : ''}
+                        </li>
+                    `).join('')}
+                </ul>`;
+            return renderHtmlList(block.items);
+        }
+        return '';
+    }).join('');
 }
 // END
 function renderSignOffPreview(data) {
@@ -369,5 +397,237 @@ function renderBulkApprovalPreview(data) {
     return html;
 }
 
+function renderDevHandoverPreview(data) {
+    let html = `
+        <div class="doc-cover" style="background:#1e293b;">
+            <div class="doc-cover-title">WORK HANDOVER</div>
+            <div class="doc-cover-sub">${escHtml(data.project_title)}</div>
+            <div class="doc-cover-credit">
+                ${escHtml(data.record_id)} | Developer: ${escHtml(data.developer_name)}<br/>
+                Next Owner: <strong>${escHtml(data.next_owner)}</strong> | Status: ${escHtml(data.overall_status)}
+            </div>
+        </div>
 
+        <div class="doc-section-title">1. Work Inventory</div>
+        <table class="doc-table">
+            <thead class="th-navy"><tr><th>Item</th><th>Status</th><th>%</th><th>Blocked?</th></tr></thead>
+            <tbody>
+                ${(data.work_inventory || []).map(i => `<tr><td>${escHtml(i.title)}</td><td>${escHtml(i.status)}</td><td>${escHtml(i.percent)}</td><td>${i.is_blocked ? '🛑' : 'No'}</td></tr>`).join('')}
+            </tbody>
+        </table>
 
+        <div class="doc-section-title">2. Completed Work</div>
+        ${(data.completed_work || []).map(w => `
+            <div class="callout teal" style="margin-bottom:10px;">
+                <strong>${escHtml(w.sub_title)}</strong>
+                <ul style="font-size:0.9em; margin:5px 0;">${(w.details || []).map(d => `<li>${escHtml(d)}</li>`).join('')}</ul>
+                ${w.notes ? `<div style="font-style:italic; font-size:0.8em;">Note: ${escHtml(w.notes)}</div>` : ''}
+            </div>
+        `).join('')}
+
+        <div class="doc-section-title">3. Remaining Work</div>
+        ${(data.remaining_work || []).map(t => `
+            <div class="callout blue" style="margin-bottom:10px;">
+                <strong>[${escHtml(t.priority)}] ${escHtml(t.title)}</strong><br/>
+                <span style="font-size:0.9em;">Todo: ${escHtml(t.todo)}</span>
+                ${t.blocked_by ? `<div style="color:red; font-size:0.8em; font-weight:bold;">Blocked by: ${escHtml(t.blocked_by)}</div>` : ''}
+            </div>
+        `).join('')}
+
+        <div class="doc-section-title">4. Blockers & Issues</div>
+        <table class="doc-table">
+            <thead class="th-navy"><tr><th class="th-navy">Issue</th><th>Impact</th><th>Workaround</th></tr></thead>
+            <tbody>
+                ${(data.blockers || []).map(b => `<tr><td style="color:#b91c1c; font-weight:bold;">${escHtml(b.issue)}</td><td>${escHtml(b.impact)}</td><td>${escHtml(b.workaround)}</td></tr>`).join('')}
+            </tbody>
+        </table>
+
+        <div class="doc-section-title">5. People & Escalation</div>
+        <table class="doc-table">
+            <tbody>
+                ${(data.contacts || []).map(c => `<tr><td style="width:120px;"><strong>${escHtml(c.role)}</strong></td><td>${escHtml(c.name)}</td><td>${escHtml(c.info)}</td></tr>`).join('')}
+            </tbody>
+        </table>
+
+        <div class="doc-section-title">6. Resources</div>
+        ${(data.resources || []).map(r => `<div><strong>${escHtml(r.category)}:</strong> ${r.links.join(', ')}</div>`).join('')}
+
+        <div class="doc-section-title">7. Environment Details</div>
+        <table class="doc-table">
+            <tbody>
+                ${Object.entries(data.environment || {}).map(([k,v]) => `<tr><td style="width:150px;">${escHtml(k)}</td><td>${escHtml(v)}</td></tr>`).join('')}
+            </tbody>
+        </table>
+
+        <div class="doc-section-title">8. Risks</div>
+        <table class="doc-table">
+            <thead class="th-navy"><tr><th>Component</th><th>Risk</th><th>Mitigation</th></tr></thead>
+            <tbody>
+                ${(data.risks || []).map(r => `<tr><td>${escHtml(r.item)}</td><td>${escHtml(r.risk)}</td><td>${escHtml(r.mitigation)}</td></tr>`).join('')}
+            </tbody>
+        </table>
+
+        <div class="doc-section-title" style="color:teal;">9. Next Steps for New Owner</div>
+        <div class="callout amber">
+            <strong>Day 1 Checklist:</strong><br/>
+            ${(data.next_steps_day1 || []).map(s => `• ${escHtml(s)}<br/>`).join('')}
+        </div>
+    `;
+    return html;
+}
+
+function renderKBArticlePreview(data) {
+    let html = `
+        <div class="doc-cover" style="background:#133960;">
+            <div class="doc-cover-title">KNOWLEDGE ARTICLE</div>
+            <div class="doc-cover-sub">${escHtml(data.category)} | ${escHtml(data.system)}</div>
+            <div class="doc-cover-credit">
+                KB ID: ${escHtml(data.kb_id)} | Owner: ${escHtml(data.owner)}<br/>
+                Last Updated: ${escHtml(data.last_updated)} | Severity: ${escHtml(data.severity)}
+            </div>
+        </div>
+
+        <div class="doc-section-title">1. Issue Summary (Plain Language)</div>
+        <div class="callout blue">
+            <strong>What is happening?</strong><br/>${escHtml(data.summary_what)}<br/><br/>
+            <strong>Who is affected?</strong>
+            <ul>${(data.summary_who || []).map(w => `<li>${escHtml(w)}</li>`).join('')}</ul>
+        </div>
+
+        <div class="doc-section-title">2. Technical Description</div>
+        <strong>Root Cause:</strong> ${escHtml(data.technical_root_cause)}
+        ${data.technical_error_log ? `<div style="background:#f1f5f9; padding:10px; border-radius:4px; font-size:11px;">${escHtml(data.technical_error_log)}</div>` : ''}
+
+        <div class="doc-section-title">3. Impact Assessment</div>
+        <table class="doc-table">
+            <thead class="th-navy"><tr><th>Impact Type</th><th>Description</th></tr></thead>
+            <tbody>${(data.impact_assessment || []).map(i => `<tr><td><strong>${escHtml(i.type)}</strong></td><td>${escHtml(i.desc)}</td></tr>`).join('')}</tbody>
+        </table>
+
+        <div class="doc-section-title">4. Resolution Steps</div>
+        <div class="callout green"><strong>Immediate Fix:</strong><ol>${(data.res_short_term || []).map(s => `<li>${escHtml(s)}</li>`).join('')}</ol></div>
+        <div class="callout teal"><strong>Permanent Fix:</strong><ol>${(data.res_permanent || []).map(s => `<li>${escHtml(s)}</li>`).join('')}</ol></div>
+
+        <div class="doc-section-title">5. Escalation</div>
+        <table class="doc-table">
+            <thead class="th-navy"><tr><th>Scenario</th><th>Contact</th><th>Channel</th></tr></thead>
+            <tbody>${(data.escalation_path || []).map(e => `<tr><td>${escHtml(e.scenario)}</td><td>${escHtml(e.contact)}</td><td>${escHtml(e.channel)}</td></tr>`).join('')}</tbody>
+        </table>
+
+        <div class="doc-section-title">6. Occurrence History</div>
+        <table class="doc-table">
+            <thead class="th-navy"><tr><th>Date</th><th>ID</th><th>Type</th><th>Env</th><th>Resolution</th></tr></thead>
+            <tbody>${(data.occurrence_history || []).map(h => `<tr><td>${escHtml(h.date)}</td><td><strong>${escHtml(h.id)}</strong></td><td>${escHtml(h.type)}</td><td>${escHtml(h.env)}</td><td>${escHtml(h.res)}</td></tr>`).join('')}</tbody>
+        </table>
+
+        <div class="doc-section-title">7. Common Triggers</div>
+        <ul>${(data.triggers || []).map(t => `<li>${escHtml(t)}</li>`).join('')}</ul>
+
+        <div class="doc-section-title">8. Affected Personas</div>
+        <table class="doc-table">
+            <thead class="th-navy"><tr><th>Persona</th><th>Impact</th></tr></thead>
+            <tbody>${(data.personas || []).map(p => `<tr><td><strong>${escHtml(p.name)}</strong></td><td>${escHtml(p.impact)}</td></tr>`).join('')}</tbody>
+        </table>
+
+        <div class="doc-section-title">9. Related Records</div>
+        ${(data.related_records || []).map(r => `<div><strong>${escHtml(r.category)}:</strong> ${r.links.join(', ')}</div>`).join('')}
+
+        <div class="doc-section-title">10. Monitoring & Prevention</div>
+        <ul>${(data.prevention_steps || []).map(s => `<li>${escHtml(s)}</li>`).join('')}</ul>
+
+        <div class="doc-section-title">11. Status</div>
+        <div style="display:flex; gap:20px; flex-wrap:wrap;">
+            ${["Known Error", "Workaround Available", "Permanent Fix Released", "Monitoring Active"].map(f => {
+                const checked = (data.status_flags || []).includes(f);
+                return `<span>${checked ? '☑' : '☐'} ${f}</span>`;
+            }).join('')}
+        </div>
+    `;
+    return html;
+}
+
+function renderTechnicalSpecPreview(data) {
+    let html = `
+        <div class="doc-cover" style="background:#0F172A;">
+            <div class="doc-cover-title">TECHNICAL SPECIFICATION</div>
+            <div class="doc-cover-sub">${escHtml(data.technical_title)}</div>
+            <div class="doc-cover-credit">
+                Version: ${escHtml(data.version)} | Date: ${escHtml(data.date)} | Author: ${escHtml(data.author)}<br/>
+                Related: <strong>${escHtml(data.related_records)}</strong>
+            </div>
+        </div>
+
+        <div class="doc-section-title">1. Requirements</div>
+        <div class="callout teal">
+            ${(data.requirements || []).map(req => `
+                <div style="margin-bottom:8px;">
+                    <strong>${escHtml(req.title)}</strong>
+                    <ul style="margin:4px 0 0 20px; font-size:0.9em;">
+                        ${(req.items || []).map(i => `<li>${escHtml(i)}</li>`).join('')}
+                    </ul>
+                </div>
+            `).join('')}
+        </div>
+
+        <div class="doc-section-title">2. Overview</div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:15px;">
+            ${["Enhancement", "Update to Existing Configuration", "Bug Fix"].map(t => {
+                const checked = (data.change_types || []).includes(t);
+                return `<div style="font-size:0.9em; opacity:${checked?1:0.4}">${checked?'☑':'☐'} ${t}</div>`;
+            }).join('')}
+        </div>
+        <table class="doc-table">
+            <thead><tr><th class="th-navy">Environment</th><th class="th-navy">Status</th><th class="th-navy">Update Set</th><th class="th-navy">Notes</th></tr></thead>
+            <tbody>
+                ${(data.environments || []).map(e => `<tr><td><strong>${escHtml(e.name)}</strong></td><td>${escHtml(e.status)}</td><td>${escHtml(e.update_set)}</td><td>${escHtml(e.notes)}</td></tr>`).join('')}
+            </tbody>
+        </table>
+        <div style="margin-top:10px;"><strong>Affected Components:</strong></div>
+        <ul>${(data.components || []).map(c => `<li>${escHtml(c)}</li>`).join('')}</ul>
+
+        <div class="doc-section-title">3. Implementation Procedure</div>
+        ${(data.implementation_steps || []).map((step, idx) => `
+            <div class="step-body">${renderStepDetails(step.details)}</div>
+        `).join('')}
+        
+        <div class="callout blue">
+            <strong>Deployment:</strong><ul>${(data.deployment_plan || []).map(p => `<li>${escHtml(p)}</li>`).join('')}</ul>
+            <strong style="color:#b91c1c;">Rollback:</strong> ${escHtml(data.rollback_plan)}
+        </div>
+
+        <div class="doc-section-title">4. Risks & Impact</div>
+        <table class="doc-table">
+            <thead><tr><th class="th-navy">Risk</th><th class="th-navy">Impact</th><th class="th-navy">Mitigation</th></tr></thead>
+            <tbody>
+                ${(data.risks || []).map(r => `<tr><td style="color:#b91c1c; font-weight:bold;">${escHtml(r.risk)}</td><td>${escHtml(r.impact)}</td><td>${escHtml(r.mitigation)}</td></tr>`).join('')}
+            </tbody>
+        </table>
+
+        <div class="doc-section-title">5. Dependencies</div>
+        <ul>${(data.dependencies || []).map(d => `<li>${escHtml(d)}</li>`).join('')}</ul>
+
+        <div class="doc-section-title">6. Assumptions</div>
+        <ul>${(data.assumptions || []).map(a => `<li>${escHtml(a)}</li>`).join('')}</ul>
+
+        <div class="doc-section-title">7. Resources</div>
+        <table class="doc-table">
+            <tbody>
+                ${Object.entries(data.resources || {}).map(([k,v]) => `<tr><td style="width:180px; background:#f8fafc; font-weight:bold;">${escHtml(k)}</td><td>${escHtml(v)}</td></tr>`).join('')}
+            </tbody>
+        </table>
+
+        <div class="doc-section-title">8. Revision History</div>
+        <table class="doc-table">
+            <thead><tr><th class="th-navy">Ver</th><th class="th-navy">Date</th><th class="th-navy">Author</th><th class="th-navy">Change</th></tr></thead>
+            <tbody>
+                ${(data.revisions || []).map(r => `<tr><td>${escHtml(r.version)}</td><td>${escHtml(r.date)}</td><td>${escHtml(r.author)}</td><td>${escHtml(r.change)}</td></tr>`).join('')}
+            </tbody>
+        </table>
+
+        <div style="text-align:center; margin-top:40px; font-size:10px; color:#94a3b8; border-top:1px solid #e2e8f0; padding-top:20px;">
+            ${escHtml(data.company_name)} – Confidential<br/>
+            For Internal / Client Use Only | © ${new Date().getFullYear()}
+        </div>
+    `;
+    return html;
+}

@@ -549,3 +549,160 @@
   ]
 }
 ```
+
+# Dev Handover
+```json
+{
+  "project_title": "HR Case Management - SLA Engine Fix",
+  "record_id": "STORY10234",
+  "developer_name": "John Doe",
+  "handover_date": "May 01, 2026",
+  "next_owner": "Sarah Smith",
+  "overall_status": "70% Complete | 2 Days Remaining",
+  "work_inventory": [
+    { "title": "SLA Business Rule", "status": "In Progress", "percent": "80%", "is_blocked": false },
+    { "title": "Integration Retry Logic", "status": "Blocked", "percent": "60%", "is_blocked": true }
+  ],
+  "completed_work": [
+    { "sub_title": "SLA Logic Implementation", "details": ["Modified global.SLAUtils", "Created 3 test cases"], "notes": "Watch for timezone issues" }
+  ],
+  "remaining_work": [
+    { "title": "UI Policy Fix", "priority": "High", "todo": "Update hide_fields_on_load logic", "blocked_by": "Figma design" }
+  ],
+  "blockers": [
+    { "issue": "OAuth Token Expiry", "impact": "Blocks integration tests", "workaround": "Manual token refresh" }
+  ],
+  "contacts": [
+    { "role": "Tech Lead", "name": "John Smith", "info": "SLA engine expert" }
+  ],
+  "resources": [
+    { "category": "Code Repos", "links": ["github.com/org/repo"] }
+  ],
+  "environment": {
+    "Branch": "feature/SLA-fix-2026",
+    "Update Sets": "HR_SLA_Engine_Fix"
+  },
+  "risks": [
+    { "item": "SLA Logic", "diff": "Medium", "risk": "Low", "mitigation": "Review ATF tests" }
+  ],
+  "next_steps_day1": ["Pull latest branch", "Ping Mike for OAuth fix"],
+  "next_steps_days_rest": ["Start UI Policy fix", "Daily standup update"]
+}
+```
+
+# KB Article
+```json
+{
+  "category": "Known Error / Recurring Issue",
+  "system": "HR Case Management",
+  "kb_id": "KB001234",
+  "owner": "Platform Team",
+  "last_updated": "May 01, 2026",
+  "overall_status": "Active",
+  "severity": "Medium",
+  "frequency": "3–5 times per month",
+  "summary_what": "Users receive 'Unexpected error occurred' during HR case submission.",
+  "summary_who": ["HR Agents", "End Users submitting forms", "Occurs mostly Monday mornings"],
+  "technical_root_cause": "SLA business rule null pointer exception when assignment group is empty.",
+  "technical_error_log": "TypeError: Cannot read property 'sys_id' of null\nTable: sn_hr_core_case\nScript: SLAUtils line 78",
+  "impact_assessment": [
+    { "type": "User Impact", "desc": "Case submission fails" },
+    { "type": "Business Impact", "desc": "Delay in HR ticket intake" },
+    { "type": "System Impact", "desc": "No data loss" }
+  ],
+  "res_short_term": ["Navigate to System Logs", "Confirm error matches signature", "Manually assign default group 'HR Tier 1'", "Resubmit case"],
+  "res_permanent": ["Open Script Include: SLAUtils", "Add null validation before line 78", "Deploy update set to PROD after CAB"],
+  "escalation_path": [
+    { "scenario": "Script error persists", "contact": "John (Tech Lead)", "channel": "Slack @john" },
+    { "scenario": "Platform defect", "contact": "ServiceNow Support", "channel": "Open HI Case" }
+  ],
+  "occurrence_history": [
+    { "date": "Jan 12, 2026", "id": "INC001234", "type": "Incident", "env": "PROD", "res": "Manual assignment" },
+    { "date": "Feb 03, 2026", "id": "INC001589", "type": "Incident", "env": "PROD", "res": "Same fix" }
+  ],
+  "triggers": ["New HR case types added", "SLA rules modified", "Data migration scripts"],
+  "personas": [
+    { "name": "HR Agent", "impact": "Cannot submit case" },
+    { "name": "Platform Admin", "impact": "Monitor error logs" }
+  ],
+  "related_records": [
+    { "category": "Parent Problem", "links": ["PRB000123"] },
+    { "category": "Related Change", "links": ["CHG000456"] },
+    { "category": "Root Cause Story", "links": ["STORY10234"] }
+  ],
+  "prevention_steps": ["Create alert on TypeError AND SLAUtils", "Add system property for validation", "Add ATF test case for null assignment group"],
+  "status_flags": ["Known Error", "Workaround Available"]
+}
+```
+
+# Tech Spec Doc
+```json
+{
+  "technical_title": "HR Case – SLA Enhancement",
+  "version": "1.2",
+  "date": "May 01, 2026",
+  "author": "John Developer",
+  "company_name": "Cloud Solutions Inc",
+  "related_records": "STORY10234 | CHG000456",
+  "requirements": [
+    { "title": "Business Requirements", "items": ["Calculate SLA based on priority", "Exclude weekends", "Allow admin override"] },
+    { "title": "Functional Requirements", "items": ["Priority 1 = 4 hours", "Priority 2 = 8 hours"] }
+  ],
+  "change_types": ["Update to Existing Configuration", "Enhancement"],
+  "environments": [
+    { "name": "DEV", "status": "Completed", "update_set": "HR_SLA_Update_v2", "notes": "Tested" },
+    { "name": "TEST", "status": "Pending", "update_set": "—", "notes": "Awaiting QA" }
+  ],
+  "components": ["Business Rule: SLA Priority Calculation", "Script Include: SLAUtils"],
+"implementation_steps": [
+    {
+      "title": "Business Rule Modification",
+      "location": "System Definition > Business Rules",
+      "details": [
+        { 
+          "type": "p", 
+          "text": "This modification ensures high-priority overrides are processed first.", 
+          "bold": true 
+        },
+        {
+          "type": "list",
+          "items": ["Check for active flag", "Validate sys_id", "Trigger event"]
+        },
+        {
+          "type": "p",
+          "text": "The following sub-tasks must be completed sequentially:",
+          "italic": true
+        },
+        {
+          "type": "nested_list",
+          "items": [
+            {
+              "text": "Phase 1: Validation",
+              "sub_items": ["Null check assignment group", "Confirm SLA state"]
+            },
+            {
+              "text": "Phase 2: Execution",
+              "sub_items": ["Fire 'sla.recalculate' event"]
+            }
+          ]
+        }
+      ],
+      "snippet": "if (current.priority == 1) { gs.eventQueue('sla.recalc', current); }"
+    }
+  ],
+  "deployment_plan": ["Commit Update Set", "Promote to TEST", "CAB Approval", "Deploy to PROD"],
+  "rollback_plan": "Revert update set and disable modified business rule.",
+  "risks": [
+    { "risk": "SLA miscalculation", "impact": "Medium", "mitigation": "Regression tests in QA environment" }
+  ],
+  "dependencies": ["Requires system property glide.sla.override.enabled = true"],
+  "assumptions": ["Override flag exists in all environments"],
+  "resources": {
+    "Repository": "github.com/company/snc-repo",
+    "Jira Story": "STORY10234"
+  },
+  "revisions": [
+    { "version": "1.0", "date": "Apr 20, 2026", "author": "Dev", "change": "Initial draft" }
+  ]
+}
+```

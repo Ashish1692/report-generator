@@ -112,10 +112,12 @@ const MODE_TO_TEMPLATE_NAME = {
     taskbrief: "Task Brief",
     projectsummary: "Project Summary",
     deploymentrunbook: "Deployment Runbook",
-    storydesign: "Story Design",
+    devhandover: "DEV Handover",
     incidentsummary: "Incident Resolution Summary",
     signoff: "Single Request Approval",
-    bulkapproval: "Bulk Approval Requests"
+    bulkapproval: "Bulk Approval Requests",
+    kbarticle: "KB Article",
+    techdoc: "Technical Document",
 };
 
 function openAiGem() {
