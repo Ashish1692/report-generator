@@ -1,6 +1,6 @@
 async function loadMarkdown() {
     try {
-        const response = await fetch('resources/structuresJSON.md');
+        const response = await fetch('https://raw.githubusercontent.com/Ashish1692/report-generator/refs/heads/main/resources/structuresJSON.MD');
         const text = await response.text();
 
         // 1. Render Markdown
