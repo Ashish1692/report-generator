@@ -116,18 +116,6 @@ function switchMode(mode) {
 function switchTab(tab) {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + tab));
-
-    // Show/Hide Email button
-    const emailBtn = document.getElementById('btn-copy-email');
-    emailBtn.style.display = (tab === 'editor') ? 'block' : 'none';
-
-    if (tab === 'editor') {
-        const ta = document.getElementById('editor-html-input');
-        // Only sync if the editor is currently empty
-        if (!ta.value) {
-            syncEditorFromPreview();
-        }
-    }
 }
 
 // ════════════════════════════════════════════════════
