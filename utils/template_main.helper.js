@@ -87,3 +87,30 @@ function renderNestedList(items, Paragraph, TextRun, C, level = 0) {
     return nodes;
 }
 // End
+
+// Function to generate the HTML for the final decision section
+function renderFinalDecision(data) {
+    const currentDecision = data.final_decision;
+    // update in template.js if modifying these options
+    let decisions = ["Approved", "Approved with Minor Changes", "Requires Rework", "Rejected"];
+    // 1. Check if the decision is one of the predefined options
+    if (currentDecision && decisions.includes(currentDecision)) {
+        // If yes, map over the predefined options to create a checkbox list
+        return decisions.map(option => {
+            const isChecked = (option === currentDecision);
+            // Apply styling to highlight the selected option and dim the others
+            return `<div style="font-size:12px; opacity:${isChecked ? 1 : 0.4}; font-weight:${isChecked ? 'bold' : 'normal'}">
+                        ${isChecked ? '☑' : '☐'} ${escHtml(option)}
+                    </div>`;
+        }).join('');
+    }
+
+    // 2. Fallback for custom decisions or if the decision is empty
+    if (currentDecision) {
+        // If it's a non-standard decision, display it as is (the original behavior)
+        return `<div style="font-size:1em; font-weight:bold; color:#1e293b; margin-bottom:10px;">${escHtml(currentDecision)}</div>`;
+    } else {
+        // If there is no decision, display a placeholder
+        return `<div style="font-size:1em; font-weight:normal; color:#9ca3af; margin-bottom:10px;">Not Decided</div>`;
+    }
+}

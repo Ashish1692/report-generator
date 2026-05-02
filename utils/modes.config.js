@@ -1,119 +1,127 @@
-    const MODES_CONFIG = [
-        {
-            id: 'callscript',
-            displayName: 'Call Script',
-            icon: '⚙',
-            generate: generateCallScript,
-            render: renderCallScriptPreview,
-            autoDetect: d => d.topics && !d.executive_summary,
-            initialActive: true // Mark this as the default selected tab
-        },
-        {
-            id: 'report',
-            displayName: 'Status Report',
-            icon: '⚙',
-            generate: generateStatusReport,
-            render: renderReportPreview,
-            // The detection logic for report, based on AUTO_DETECTION_RULES
-            autoDetect: d => d.executive_summary,
-        },
-        {
-            id: 'rca',
-            displayName: 'RCA',
-            icon: '⚙',
-            generate: generateRCA, // Matching case from getModeHandler
-            render: renderRcaPreview,
-            autoDetect: d => d.incident && !d.executive_summary && !d.topics && !d.task_num,
-        },
-        {
-            id: 'blocker',
-            displayName: 'Blocker Brief',
-            icon: '⚙',
-            generate: generateBlockerBrief,
-            render: renderBlockerPreview,
-            autoDetect: d => d.task_num && d.blocker_description,
-        },
-        {
-            id: 'techapproach',
-            displayName: 'Tech Approach Document',
-            icon: '⚙',
-            generate: generateTechApproach,
-            render: renderTechApproachPreview,
-            autoDetect: d => d.task_num && d.proposed_solution && d.technical_spec,
-        },
-        {
-            id: 'taskbrief',
-            displayName: 'Task Brief',
-            icon: '⚙',
-            generate: generateTaskBrief,
-            render: renderTaskBriefPreview,
-            autoDetect: d => d.task_num && (d.reported_behavior || d.investigation),
-        },
-        {
-            id: 'projectsummary',
-            displayName: 'Project Summary',
-            icon: '⚙',
-            generate: generateProjectSummary,
-            render: renderProjectSummaryPreview,
-            autoDetect: d => d.project_name && !d.deployment_steps && !d.approval_tasks,
-        },
-        {
-            id: 'deploymentrunbook',
-            displayName: 'Deployment Runbook',
-            icon: '⚙',
-            generate: generateDeploymentRunbook,
-            render: renderDeploymentRunbookPreview,
-            autoDetect: d => d.deployment_steps && d.ops_lead,
-        },
-        {
-            id: 'incidentsummary',
-            displayName: 'INC Resolution Summary',
-            icon: '⚙',
-            generate: generateIncidentSummary,
-            render: renderIncidentSummaryPreview,
-            autoDetect: d => d.incident_number,
-        },
-        {
-            id: 'signoff',
-            displayName: 'Single Task Approval',
-            icon: '⚙',
-            generate: generateSignOffRequest,
-            render: renderSignOffPreview,
-            autoDetect: d => d.signoff_id && d.objective,
-        },
-        {
-            id: 'bulkapproval',
-            displayName: 'Bulk Task Approval',
-            icon: '⚙',
-            generate: generateBulkApprovalRequest,
-            render: renderBulkApprovalPreview,
-            autoDetect: d => d.approval_tasks && d.project_name,
-        },
-        {
-            id: 'devhandover',
-            displayName: 'DEV Handover',
-            icon: '⚙',
-            generate: generateDevHandover,
-            render: renderDevHandoverPreview,
-            autoDetect: d => d.work_inventory && d.next_owner,
-        },
-        {
-            id: 'kbarticle',
-            displayName: 'KB Article',
-            icon: '⚙',
-            generate: generateKBArticle,
-            render: renderKBArticlePreview,
-            autoDetect: d => d.kb_id && d.occurrence_history,
-        },
-        {
-            id: 'techdoc',
-            displayName: 'Tech Spec Document',
-            icon: '⚙',
-            generate: generateTechnicalSpec,
-            render: renderTechnicalSpecPreview,
-            autoDetect: d => d.technical_title && d.implementation_steps,
-        }
-    ];
+const MODES_CONFIG = [
+    {
+        id: 'callscript',
+        displayName: 'Call Script',
+        icon: '⚙',
+        generate: generateCallScript,
+        render: renderCallScriptPreview,
+        autoDetect: d => d.topics && !d.executive_summary,
+        initialActive: true // Mark this as the default selected tab
+    },
+    {
+        id: 'report',
+        displayName: 'Status Report',
+        icon: '⚙',
+        generate: generateStatusReport,
+        render: renderReportPreview,
+        // The detection logic for report, based on AUTO_DETECTION_RULES
+        autoDetect: d => d.executive_summary,
+    },
+    {
+        id: 'rca',
+        displayName: 'RCA',
+        icon: '⚙',
+        generate: generateRCA, // Matching case from getModeHandler
+        render: renderRcaPreview,
+        autoDetect: d => d.incident && !d.executive_summary && !d.topics && !d.task_num,
+    },
+    {
+        id: 'blocker',
+        displayName: 'Blocker Brief',
+        icon: '⚙',
+        generate: generateBlockerBrief,
+        render: renderBlockerPreview,
+        autoDetect: d => d.task_num && d.blocker_description,
+    },
+    {
+        id: 'techapproach',
+        displayName: 'Tech Approach Document',
+        icon: '⚙',
+        generate: generateTechApproach,
+        render: renderTechApproachPreview,
+        autoDetect: d => d.task_num && d.proposed_solution && d.technical_spec,
+    },
+    {
+        id: 'taskbrief',
+        displayName: 'Task Brief',
+        icon: '⚙',
+        generate: generateTaskBrief,
+        render: renderTaskBriefPreview,
+        autoDetect: d => d.task_num && (d.reported_behavior || d.investigation),
+    },
+    {
+        id: 'projectsummary',
+        displayName: 'Project Summary',
+        icon: '⚙',
+        generate: generateProjectSummary,
+        render: renderProjectSummaryPreview,
+        autoDetect: d => d.project_name && !d.deployment_steps && !d.approval_tasks,
+    },
+    {
+        id: 'deploymentrunbook',
+        displayName: 'Deployment Runbook',
+        icon: '⚙',
+        generate: generateDeploymentRunbook,
+        render: renderDeploymentRunbookPreview,
+        autoDetect: d => d.deployment_steps && d.ops_lead,
+    },
+    {
+        id: 'incidentsummary',
+        displayName: 'INC Resolution Summary',
+        icon: '⚙',
+        generate: generateIncidentSummary,
+        render: renderIncidentSummaryPreview,
+        autoDetect: d => d.incident_number,
+    },
+    {
+        id: 'signoff',
+        displayName: 'Single Task Approval',
+        icon: '⚙',
+        generate: generateSignOffRequest,
+        render: renderSignOffPreview,
+        autoDetect: d => d.signoff_id && d.objective,
+    },
+    {
+        id: 'bulkapproval',
+        displayName: 'Bulk Task Approval',
+        icon: '⚙',
+        generate: generateBulkApprovalRequest,
+        render: renderBulkApprovalPreview,
+        autoDetect: d => d.approval_tasks && d.project_name,
+    },
+    {
+        id: 'devhandover',
+        displayName: 'DEV Handover',
+        icon: '⚙',
+        generate: generateDevHandover,
+        render: renderDevHandoverPreview,
+        autoDetect: d => d.work_inventory && d.next_owner,
+    },
+    {
+        id: 'kbarticle',
+        displayName: 'KB Article',
+        icon: '⚙',
+        generate: generateKBArticle,
+        render: renderKBArticlePreview,
+        autoDetect: d => d.kb_id && d.occurrence_history,
+    },
+    {
+        id: 'techdoc',
+        displayName: 'Tech Spec Document',
+        icon: '⚙',
+        generate: generateTechnicalSpec,
+        render: renderTechnicalSpecPreview,
+        autoDetect: d => d.technical_title && d.implementation_steps,
+    },
+    {
+        id: 'code_review',
+        displayName: 'Code Review',
+        icon: '⚙',
+        generate: generateCodeReview,
+        render: renderCodeReviewPreview,
+        autoDetect: d => d.task_id && d.is_code_review,
+    }
+];
 
 
 // --- 1. Dynamically generate mode tabs based on the configuration ---
@@ -164,16 +172,16 @@ function initializeCustomDropdown() {
         if (target) {
             const modeId = target.dataset.mode;
             const selectedMode = MODES_CONFIG.find(m => m.id === modeId);
-            
+
             // Update the display button
             selectedDisplay.innerHTML = `${selectedMode.icon} ${selectedMode.displayName}`;
-            
+
             // Close the dropdown
             dropdown.classList.remove('open');
             toggleBtn.setAttribute('aria-expanded', 'false');
 
             // Call your existing logic to switch the mode
-            switchMode(modeId); 
+            switchMode(modeId);
         }
     });
 

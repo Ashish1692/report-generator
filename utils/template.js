@@ -1348,3 +1348,144 @@ async function generateTechnicalSpec(data) {
     const blob = await Packer.toBlob(doc);
     return { blob, filename: `TechSpec_${data.technical_title.replace(/\s+/g, '_')}.docx` };
 }
+
+async function generateCodeReview(data) {
+    const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, AlignmentType, BorderStyle, WidthType, ShadingType } = getDocx();
+    const C = docxColors();
+    const CW = 9360; 
+
+    const children = [];
+
+    // --- INTERNAL RICH CONTENT HELPER ---
+    const renderRichContent = (content) => {
+        if (!content) return;
+        const blocks = Array.isArray(content) ? content : [content];
+        blocks.forEach(block => {
+            if (typeof block === 'string') {
+                children.push(new Paragraph({ bullet: { level: 0 }, children: [new TextRun({ text: safeStr(block), size: 18, color: C.GRAY })] }));
+            } else if (block.type === 'p') {
+                children.push(new Paragraph({
+                    spacing: { before: 120, after: 120 },
+                    children: [new TextRun({ text: safeStr(block.text), bold: !!block.bold, italic: !!block.italic, size: 18, color: C.GRAY })]
+                }));
+            } else if (block.type === 'list') {
+                (block.items || []).forEach(item => {
+                    children.push(new Paragraph({ bullet: { level: 0 }, children: [new TextRun({ text: safeStr(item), size: 18, color: C.GRAY })] }));
+                });
+            } else if (block.type === 'nested_list') {
+                children.push(...renderNestedList(block.items, Paragraph, TextRun, C));
+            }
+        });
+    };
+
+    // --- 0. HEADER & TITLE ---
+    children.push(new Table({
+        width: { size: CW, type: WidthType.DXA },
+        rows: [new TableRow({
+            children: [new TableCell({
+                shading: { fill: '1e293b', type: ShadingType.CLEAR },
+                margins: { top: 400, bottom: 400, left: 400, right: 400 },
+                children: [
+                    new Paragraph({ children: [new TextRun({ text: "CODE REVIEW SUMMARY", bold: true, color: C.WHITE, size: 36 })] }),
+                    new Paragraph({ children: [new TextRun({ text: safeStr(data.title), color: 'AECBF0', size: 22 })] }),
+                    sp(200, 0),
+                    new Paragraph({ children: [new TextRun({ text: `Task ID: ${safeStr(data.task_id)} | Author: ${safeStr(data.author)}`, color: C.WHITE, size: 18 })] }),
+                    new Paragraph({ children: [new TextRun({ text: `Reviewer(s): ${safeStr(data.reviewers)} | Date: ${safeStr(data.date)}`, color: 'C0D8F5', size: 18 })] })
+                ]
+            })]
+        })]
+    }));
+
+    // Code Types Checkboxes
+    children.push(sp(200, 100));
+    // update in template_main.helper.js if modifying these options
+    const codeTypes = ["Business Rule", "Client Script", "Script Include", "Flow Designer", "UI Policy", "Scheduled Script", "Integration"];
+    const typeRuns = codeTypes.map(t => {
+        const checked = (data.code_types || []).includes(t);
+        return new TextRun({ text: `${checked ? '☑' : '☐'} ${t}    `, size: 18, color: C.NAVY, bold: checked });
+    });
+    children.push(new Paragraph({ children: typeRuns }));
+
+    // --- 1. ENVIRONMENT DETAILS ---
+    children.push(h2("1. Environment Details"));
+    children.push(new Table({
+        width: { size: CW, type: WidthType.DXA },
+        rows: [
+            new TableRow({ children: [hdrCell("Environment(s)", C.GRAY, C.WHITE, 2500), dataCell((data.environment?.envs || []).join(', '), C.WHITE, C.GRAY, 6860)] }),
+            new TableRow({ children: [hdrCell("Change Type", C.GRAY, C.WHITE, 2500), dataCell(safeStr(data.environment?.change_type), C.WHITE, C.GRAY, 6860)] }),
+            new TableRow({ children: [hdrCell("Update Set / Branch", C.GRAY, C.WHITE, 2500), dataCell(safeStr(data.environment?.update_set), C.WHITE, C.GRAY, 6860)] }),
+            new TableRow({ children: [hdrCell("Deployment Target", C.GRAY, C.WHITE, 2500), dataCell(safeStr(data.environment?.deployment_target), C.WHITE, C.GRAY, 6860)] })
+        ]
+    }));
+
+    // --- 2. CODE OVERVIEW ---
+    children.push(h2("2. Code Overview"));
+    children.push(para(data.overview?.explanation, false, C.GRAY, 18));
+    children.push(para("Scope:", true, C.NAVY, 18));
+    (data.overview?.scope || []).forEach(s => children.push(new Paragraph({ bullet: { level: 0 }, children: [new TextRun({ text: safeStr(s), size: 18 })] })));
+
+    // --- 3. SUMMARY OF CHANGES ---
+    children.push(h2("3. Summary of Changes"));
+    children.push(para("Major Changes", true, C.NAVY, 18));
+    renderRichContent(data.summary_of_changes?.major);
+    children.push(para("Minor Adjustments", true, C.NAVY, 18));
+    renderRichContent(data.summary_of_changes?.minor);
+    children.push(para("Technical Notes", true, C.NAVY, 18));
+    renderRichContent(data.summary_of_changes?.tech_notes);
+
+    // --- 4. CODE SECTIONS ---
+    children.push(h2("4. Code Section"));
+    (data.code_sections || []).forEach((section, i) => {
+        children.push(para(`4.${i + 1} ${section.title}`, true, C.NAVY, 20));
+        children.push(new Table({
+            width: { size: CW, type: WidthType.DXA },
+            rows: [new TableRow({ children: [new TableCell({ shading: { fill: 'F1F5F9' }, margins: { left: 200, top: 100, bottom: 100 }, children: [new Paragraph({ children: [new TextRun({ text: section.snippet, font: 'Courier New', size: 16, color: C.NAVY })] })] })] })]
+        }));
+        children.push(para(section.explanation, false, C.GRAY, 17));
+        sp(100, 100);
+    });
+
+    // --- 5. OBSERVATIONS ---
+    children.push(h2("5. Observations"));
+    const obs = data.observations || {};
+    const renderObs = (label, list) => {
+        children.push(para(label, true, C.GRAY, 18));
+        (list || []).forEach(item => children.push(new Paragraph({ bullet: { level: 0 }, children: [new TextRun({ text: safeStr(item), size: 18 })] })));
+    };
+    renderObs("Code Quality", obs.quality);
+    renderObs("Performance", obs.performance);
+    renderObs("Security", obs.security);
+    renderObs("Risks Identified", obs.risks);
+
+    // --- 6. TESTING VALIDATION ---
+    children.push(h2("6. Testing Validation"));
+    const testRows = [new TableRow({ children: [hdrCell("Scenario", C.NAVY, C.WHITE, 7000), hdrCell("Result", C.NAVY, C.WHITE, 2360)] })];
+    (data.testing?.scenarios || []).forEach(s => {
+        testRows.push(new TableRow({ children: [dataCell(s.case, C.WHITE, C.GRAY, 7000), dataCell(s.result, C.WHITE, s.result === 'Pass' ? C.GREEN : C.RED, 2360, true)] }));
+    });
+    children.push(new Table({ width: { size: CW, type: WidthType.DXA }, rows: testRows }));
+    children.push(para(`ATF Suite: ${data.testing?.atf_suite || 'N/A'}`, true, C.GRAY, 16));
+
+    // --- 8. APPROVAL SECTION ---
+    children.push(h2("8. Approval Section"));
+    const appRows = [new TableRow({ children: [hdrCell("Role", C.NAVY, C.WHITE, 2000), hdrCell("Name", C.NAVY, C.WHITE, 2000), hdrCell("Status", C.NAVY, C.WHITE, 1500), hdrCell("Date", C.NAVY, C.WHITE, 1200), hdrCell("Comments", C.NAVY, C.WHITE, 2660)] })];
+    (data.approvals || []).forEach(a => {
+        appRows.push(new TableRow({ children: [dataCell(a.role, C.WHITE, C.NAVY, 2000, true), dataCell(a.name, C.WHITE, C.GRAY, 2000), dataCell(a.status, C.WHITE, C.GRAY, 1500), dataCell(a.date, C.WHITE, C.GRAY, 1200), dataCell(a.comments, C.WHITE, C.GRAY, 2660)] }));
+    });
+    children.push(new Table({ width: { size: CW, type: WidthType.DXA }, rows: appRows }));
+
+    // --- 9. FINAL DECISION ---
+    children.push(h2("9. Final Decision"));
+    // update in template_main.helper.js if modifying these options
+    const decisions = ["Approved", "Approved with Minor Changes", "Requires Rework", "Rejected"]; 
+    decisions.forEach(d => {
+        const isSelected = data.final_decision === d;
+        children.push(new Paragraph({ children: [new TextRun({ text: isSelected ? "☑ " : "☐ ", size: 20, bold: true }), new TextRun({ text: d, size: 18 })] }));
+    });
+    sp(200, 0);
+    children.push(para(`Reviewer Signature: ____________________  Date: ${safeStr(data.signature_date)}`, true, C.NAVY, 18));
+
+    const doc = new Document({ sections: [{ properties: { page: { margin: { top: 1080, right: 1080, bottom: 1080, left: 1080 } } }, children }] });
+    const blob = await Packer.toBlob(doc);
+    return { blob, filename: `CodeReview_${data.task_id}.docx` };
+}

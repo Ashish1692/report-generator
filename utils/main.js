@@ -398,7 +398,7 @@ function renderDevHandoverPreview(data) {
         <div class="doc-section-title">7. Environment Details</div>
         <table class="doc-table">
             <tbody>
-                ${Object.entries(data.environment || {}).map(([k,v]) => `<tr><td style="width:150px;">${escHtml(k)}</td><td>${escHtml(v)}</td></tr>`).join('')}
+                ${Object.entries(data.environment || {}).map(([k, v]) => `<tr><td style="width:150px;">${escHtml(k)}</td><td>${escHtml(v)}</td></tr>`).join('')}
             </tbody>
         </table>
 
@@ -481,9 +481,9 @@ function renderKBArticlePreview(data) {
         <div class="doc-section-title">11. Status</div>
         <div style="display:flex; gap:20px; flex-wrap:wrap;">
             ${["Known Error", "Workaround Available", "Permanent Fix Released", "Monitoring Active"].map(f => {
-                const checked = (data.status_flags || []).includes(f);
-                return `<span>${checked ? '☑' : '☐'} ${f}</span>`;
-            }).join('')}
+        const checked = (data.status_flags || []).includes(f);
+        return `<span>${checked ? '☑' : '☐'} ${f}</span>`;
+    }).join('')}
         </div>
     `;
     return html;
@@ -515,9 +515,9 @@ function renderTechnicalSpecPreview(data) {
         <div class="doc-section-title">2. Overview</div>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:15px;">
             ${["Enhancement", "Update to Existing Configuration", "Bug Fix"].map(t => {
-                const checked = (data.change_types || []).includes(t);
-                return `<div style="font-size:0.9em; opacity:${checked?1:0.4}">${checked?'☑':'☐'} ${t}</div>`;
-            }).join('')}
+        const checked = (data.change_types || []).includes(t);
+        return `<div style="font-size:0.9em; opacity:${checked ? 1 : 0.4}">${checked ? '☑' : '☐'} ${t}</div>`;
+    }).join('')}
         </div>
         <table class="doc-table">
             <thead><tr><th class="th-navy">Environment</th><th class="th-navy">Status</th><th class="th-navy">Update Set</th><th class="th-navy">Notes</th></tr></thead>
@@ -555,7 +555,7 @@ function renderTechnicalSpecPreview(data) {
         <div class="doc-section-title">7. Resources</div>
         <table class="doc-table">
             <tbody>
-                ${Object.entries(data.resources || {}).map(([k,v]) => `<tr><td style="width:180px; background:#f8fafc; font-weight:bold;">${escHtml(k)}</td><td>${escHtml(v)}</td></tr>`).join('')}
+                ${Object.entries(data.resources || {}).map(([k, v]) => `<tr><td style="width:180px; background:#f8fafc; font-weight:bold;">${escHtml(k)}</td><td>${escHtml(v)}</td></tr>`).join('')}
             </tbody>
         </table>
 
@@ -570,6 +570,165 @@ function renderTechnicalSpecPreview(data) {
         <div style="text-align:center; margin-top:40px; font-size:10px; color:#94a3b8; border-top:1px solid #e2e8f0; padding-top:20px;">
             ${escHtml(data.company_name)} – Confidential<br/>
             For Internal / Client Use Only | © ${new Date().getFullYear()}
+        </div>
+    `;
+    return html;
+}
+
+function renderCodeReviewPreview(data) {
+    // --- INTERNAL RICH CONTENT ENGINE ---
+    const rich = (content) => {
+        if (!content) return '';
+        if (typeof content === 'string') return `<p>${escHtml(content)}</p>`;
+
+        if (Array.isArray(content)) {
+            return content.map(block => {
+                if (typeof block === 'string') return `<li>${escHtml(block)}</li>`;
+                if (block.type === 'p') {
+                    const style = `${block.bold ? 'font-weight:bold;' : ''} ${block.italic ? 'font-style:italic;' : ''}`;
+                    return `<p style="${style} color:#475569; margin: 8px 0;">${escHtml(block.text)}</p>`;
+                }
+                if (block.type === 'list') {
+                    return `<ul style="margin: 8px 0;">${(block.items || []).map(i => `<li>${escHtml(i)}</li>`).join('')}</ul>`;
+                }
+                if (block.type === 'nested_list') {
+                    const renderUl = (items) => `
+                        <ul style="margin: 4px 0;">
+                            ${items.map(i => `
+                                <li>
+                                    ${escHtml(i.text || i)}
+                                    ${i.sub_items ? renderUl(i.sub_items) : ''}
+                                </li>
+                            `).join('')}
+                        </ul>`;
+                    return renderUl(block.items || []);
+                }
+                return '';
+            }).join('');
+        }
+        return '';
+    };
+
+    let html = `
+        <div class="doc-cover" style="background:#1e293b;">
+            <div style="color:#94a3b8; font-size: 12px; letter-spacing: 2px; margin-bottom: 10px;">CODE REVIEW</div>
+            <div class="doc-cover-title" style="border:none; padding:0;">${escHtml(data.task_id)} - ${escHtml(data.title)}</div>
+            
+            <div style="color:#94A3B8; font-size:14px;">
+                <strong>Developer:</strong> ${escHtml(data.author)} | <strong>Reviewer(s):</strong> ${escHtml(data.reviewers)}<br/>
+                <strong>Date:</strong> ${escHtml(data.date)} | <strong>Version:</strong> ${escHtml(data.version)}
+            </div>
+        </div>
+
+        <!-- CODE TYPES CHECKBOXES -->
+        <!-- update in template.js if modifying these options -->
+        <div style="display:flex; flex-wrap:wrap; gap:15px; margin: 20px 0; padding: 15px; background:#f8fafc; border-radius:8px; border:1px solid #e2e8f0;">
+            ${["Business Rule", "Client Script", "Script Include", "Flow Designer", "UI Policy", "Scheduled Script", "Integration", "Email Script", "Data Policy", "UI Page", "Other"].map(t => {
+        const checked = (data.code_types || []).includes(t);
+        return `<div style="font-size:12px; opacity:${checked ? 1 : 0.4}; font-weight:${checked ? 'bold' : 'normal'}">
+                    ${checked ? '☑' : '☐'} ${t}
+                </div>`;
+    }).join('')}
+        </div>
+
+        <!-- 1. ENVIRONMENT DETAILS -->
+        <div class="doc-section-title">1. Environment Details</div>
+        <table class="doc-table">
+            <tbody>
+                <tr><td style="width:200px;">Environment(s)</td><td>${(data.environment?.envs || []).join(', ')}</td></tr>
+                <tr><td>Type</td><td>${escHtml(data.environment?.change_type)}</td></tr>
+                <tr><td>Update Set / Branch</td><td style="font-family:monospace; font-size:11px;">${escHtml(data.environment?.update_set)}</td></tr>
+                <tr><td>Deployment Target</td><td>${escHtml(data.environment?.deployment_target)}</td></tr>
+            </tbody>
+        </table>
+
+        <!-- 2. CODE OVERVIEW -->
+        <div class="doc-section-title">2. Code Overview</div>
+        <div class="callout blue">
+            ${escHtml(data.overview?.explanation)}
+            <ul style="margin-top:10px; font-size:0.9em;">
+                ${(data.overview?.scope || []).map(s => `<li>${escHtml(s)}</li>`).join('')}
+            </ul>
+        </div>
+
+        <!-- 3. SUMMARY OF CHANGES -->
+        <div class="doc-section-title">3. Summary of Changes</div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div>
+                <strong style="color:#1e293b; font-size:0.9em;">Major Changes</strong>
+                ${rich(data.summary_of_changes?.major)}
+            </div>
+            <div>
+                <strong style="color:#1e293b; font-size:0.9em;">Minor Adjustments</strong>
+                ${rich(data.summary_of_changes?.minor)}
+            </div>
+        </div>
+        <div style="margin-top:15px; padding-top:15px; border-top:1px dashed #e2e8f0;">
+             <strong style="color:#1e293b; font-size:0.9em;">Technical Notes</strong>
+             ${rich(data.summary_of_changes?.tech_notes)}
+        </div>
+
+        <!-- 4. CODE SECTIONS -->
+        <div class="doc-section-title">4. Code Section</div>
+        ${(data.code_sections || []).map((section, i) => `
+            <div style="margin-bottom:25px;">
+                <div style="font-weight:bold; color:#1e293b; margin-bottom:5px;">4.${i + 1} ${escHtml(section.title)}</div>
+                <pre style="background:#f1f5f9; border-left:4px solid #1e293b; padding:15px; font-size:11px; color:#1e293b; overflow-x:auto;">${escHtml(section.snippet)}</pre>
+                <div style="font-size:12px; color:#64748b; font-style:italic;">${escHtml(section.explanation)}</div>
+            </div>
+        `).join('')}
+
+        <!-- 5. OBSERVATIONS -->
+        <div class="doc-section-title">5. Observations</div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="callout teal"><strong>Code Quality:</strong> <ul>${(data.observations?.quality || []).map(o => `<li>${escHtml(o)}</li>`).join('')}</ul></div>
+            <div class="callout blue"><strong>Performance:</strong> <ul>${(data.observations?.performance || []).map(o => `<li>${escHtml(o)}</li>`).join('')}</ul></div>
+        </div>
+        <div class="callout amber" style="margin-top:15px;"><strong>Risks Identified:</strong> <ul>${(data.observations?.risks || []).map(o => `<li>${escHtml(o)}</li>`).join('')}</ul></div>
+
+        <!-- 6. TESTING VALIDATION -->
+        <div class="doc-section-title">6. Testing Validation</div>
+        <table class="doc-table">
+            <thead><tr><th class="th-navy">Scenario</th><th class="th-navy" style="width:100px;">Result</th></tr></thead>
+            <tbody>
+                ${(data.testing?.scenarios || []).map(s => `
+                    <tr>
+                        <td>${escHtml(s.case)}</td>
+                        <td style="text-align:left;">
+                            <span style="background:${s.result === 'Pass' ? '#dcfce7' : '#fee2e2'}; color:${s.result === 'Pass' ? '#166534' : '#991b1b'}; padding:2px 8px; border-radius:10px; font-weight:bold; font-size:10px;">
+                                ${escHtml(s.result.toUpperCase())}
+                            </span>
+                        </td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+        <div style="font-size:11px; margin-top:5px; color:#64748b;"><strong>ATF Suite:</strong> ${escHtml(data.testing?.atf_suite)}</div>
+
+        <!-- 8. APPROVAL SECTION -->
+        <div class="doc-section-title">8. Approval Section</div>
+        <table class="doc-table">
+                    <thead><tr><th class="th-navy">Role</th><th class="th-navy">Name</th><th class="th-navy">Status</th><th class="th-navy">Date</th></tr></thead>
+            <tbody>
+                ${(data.approvals || []).map(a => `
+                    <tr><td><strong>${escHtml(a.role)}</strong></td><td>${escHtml(a.name)}</td><td>${escHtml(a.status)}</td><td>${escHtml(a.date)}</td></tr>
+                `).join('')}
+            </tbody>
+        </table>
+
+<!-- 9. FINAL DECISION -->
+    <div class="doc-section-title">9. Final Decision</div>
+    <div>
+        <!-- Call the function to generate the dynamic content -->
+        ${renderFinalDecision(data)}
+
+        <!-- The signature line remains the same for all cases -->
+        <div style="font-size:12px; color:#64748b; margin-top: 10px;">
+            Reviewer(s): ${escHtml(data.signature_name)} | Date: ${escHtml(data.signature_date)}
+        </div>
+    </div>
+        <div style="margin-top:30px; padding-top:20px; border-top:1px solid #e2e8f0; text-align:center; font-size:10px; color:#94a3b8;">
+            CONFIDENTIAL CODE REVIEW SUMMARY | GENERATED ON ${new Date().toLocaleDateString()}
         </div>
     `;
     return html;

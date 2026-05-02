@@ -765,3 +765,87 @@
   ]
 }
 ```
+
+# 1️⃣6️⃣ Code Review
+```json
+{
+  "is_code_review": true,
+  "title": "SLA Calculation Logic Enhancement",
+  "task_id": "STORY10234",
+  "author": "John Developer",
+  "reviewers": "Sarah Smith (Lead), Mike Jones",
+  "version": "1.2",
+  "date": "May 01, 2026",
+  "code_types": ["Business Rule", "Script Include"],
+  
+  "environment": {
+    "envs": ["DEV", "TEST"],
+    "change_type": "Enhancement",
+    "update_set": "HR_SLA_Recalc_v1",
+    "deployment_target": "PROD - June Release"
+  },
+  
+  "overview": {
+    "explanation": "This code handles the recalculation of SLA records when a priority override flag is toggled on the parent incident.",
+    "scope": [
+      "Triggered on: incident table",
+      "Runs: After Update",
+      "Condition: override_flag == true"
+    ]
+  },
+  
+  "summary_of_changes": {
+    "major": [
+      { "type": "p", "text": "Implemented central recalculation logic in SLAUtils.", "bold": true },
+      { "type": "list", "items": ["Added override condition", "Added null validation"] }
+    ],
+    "minor": ["Refactored variable naming", "Improved indentation"],
+    "tech_notes": [
+      { "type": "p", "text": "Performance considerations:", "italic": true },
+      { "type": "nested_list", "items": [
+          { "text": "Guard Clauses", "sub_items": ["Immediate exit if no change detected"] },
+          { "text": "GlideDateTime", "sub_items": ["Used for weekend exclusion logic"] }
+      ]}
+    ]
+  },
+  
+  "code_sections": [
+    {
+      "title": "Business Rule Snippet",
+      "snippet": "if (current.override_flag) {\n    SLAUtils.recalculate(current);\n}",
+      "explanation": "This condition ensures recalculation only when override is enabled."
+    }
+  ],
+  
+  "observations": {
+    "quality": ["✅ Clear naming", "⚠ Logging could be centralized"],
+    "performance": ["No loops over large datasets", "Efficient conditional execution"],
+    "security": ["No exposure of sensitive data"],
+    "maintainability": ["Comments added", "Modular logic"],
+    "risks": ["Weekend logic may require timezone testing"]
+  },
+  
+  "testing": {
+    "scenarios": [
+      { "case": "High Priority", "result": "Pass" },
+      { "case": "Override Flag", "result": "Pass" },
+      { "case": "Weekend Case", "result": "Pass" }
+    ],
+    "atf_suite": "ATF_SLA_Calculation_v2"
+  },
+  
+  "recommendations": [
+    "Add unit test for timezone edge cases",
+    "Consider moving logging to central utility"
+  ],
+  
+  "approvals": [
+    { "role": "Peer Reviewer", "name": "Sarah Smith", "status": "Pass", "date": "May 02", "comments": "Logic is sound." },
+    { "role": "Tech Lead", "name": "Mike Jones", "status": "Approved", "date": "May 03", "comments": "" }
+  ],
+  
+  "final_decision": "Approved with Minor Changes",
+  "signature_name": "Sarah Smith",
+  "signature_date": "May 03, 2026"
+}
+```

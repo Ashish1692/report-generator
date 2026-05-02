@@ -4,24 +4,16 @@ To ensure all sections of the **Enterprise Code Review Summary** are captured wi
 
 This part defines how the system identifies a Code Review document and the structure of the data it expects.
 
-#### 1. Update `helper.js`
-Add the routing logic to handle the new template mode.
-
-```javascript
-// In loadJSON()
-else if (data.task_id && data.is_code_review) {
-    switchMode('code_review');
-}
-
-// In generate()
-else if (currentMode === 'code_review') {
-    result = await generateCodeReview(currentData);
-}
-
-// In renderPreview()
-else if (currentMode === 'code_review') {
-    el.innerHTML = renderCodeReviewPreview(data);
-}
+#### 1. Update `mode.config.js`
+```
+    {
+        id: 'code_review',
+        displayName: 'Code Review',
+        icon: '⚙',
+        generate: generateCodeReview,
+        render: renderCodeReviewPreview,
+        autoDetect: d => d.task_id && d.is_code_review,
+    }
 ```
 
 #### 2. Comprehensive JSON Schema
@@ -169,6 +161,7 @@ async function generateCodeReview(data) {
 
     // Code Types Checkboxes
     children.push(sp(200, 100));
+    // update in template_main.helper.js if modifying these options
     const codeTypes = ["Business Rule", "Client Script", "Script Include", "Flow Designer", "UI Policy", "Scheduled Script", "Integration"];
     const typeRuns = codeTypes.map(t => {
         const checked = (data.code_types || []).includes(t);
@@ -246,7 +239,8 @@ async function generateCodeReview(data) {
 
     // --- 9. FINAL DECISION ---
     children.push(h2("9. Final Decision"));
-    const decisions = ["Approved", "Approved with Minor Changes", "Requires Rework", "Rejected"];
+    // update in template_main.helper.js if modifying these options
+    const decisions = ["Approved", "Approved with Minor Changes", "Requires Rework", "Rejected"]; 
     decisions.forEach(d => {
         const isSelected = data.final_decision === d;
         children.push(new Paragraph({ children: [new TextRun({ text: isSelected ? "☑ " : "☐ ", size: 20, bold: true }), new TextRun({ text: d, size: 18 })] }));
@@ -272,7 +266,7 @@ function renderCodeReviewPreview(data) {
     const rich = (content) => {
         if (!content) return '';
         if (typeof content === 'string') return `<p>${escHtml(content)}</p>`;
-        
+
         if (Array.isArray(content)) {
             return content.map(block => {
                 if (typeof block === 'string') return `<li>${escHtml(block)}</li>`;
@@ -302,35 +296,35 @@ function renderCodeReviewPreview(data) {
     };
 
     let html = `
-        <div class="doc-cover" style="background:#1e293b; padding: 60px 40px;">
-            <div style="color:#94a3b8; font-size: 12px; letter-spacing: 2px; margin-bottom: 10px;">CODE REVIEW SUMMARY</div>
-            <div class="doc-cover-title" style="border:none; padding:0;">${escHtml(data.title)}</div>
-            <div style="color:#AECBF0; font-size: 18px; margin-top:10px;">${escHtml(data.task_id)}</div>
+        <div class="doc-cover" style="background:#1e293b;">
+            <div style="color:#94a3b8; font-size: 12px; letter-spacing: 2px; margin-bottom: 10px;">CODE REVIEW</div>
+            <div class="doc-cover-title" style="border:none; padding:0;">${escHtml(data.task_id)} - ${escHtml(data.title)}</div>
             
-            <div style="margin-top:40px; color:#94A3B8; font-size:14px;">
-                <strong>Author:</strong> ${escHtml(data.author)} | <strong>Reviewer(s):</strong> ${escHtml(data.reviewers)}<br/>
+            <div style="color:#94A3B8; font-size:14px;">
+                <strong>Developer:</strong> ${escHtml(data.author)} | <strong>Reviewer(s):</strong> ${escHtml(data.reviewers)}<br/>
                 <strong>Date:</strong> ${escHtml(data.date)} | <strong>Version:</strong> ${escHtml(data.version)}
             </div>
         </div>
 
         <!-- CODE TYPES CHECKBOXES -->
+        <!-- update in template.js if modifying these options -->
         <div style="display:flex; flex-wrap:wrap; gap:15px; margin: 20px 0; padding: 15px; background:#f8fafc; border-radius:8px; border:1px solid #e2e8f0;">
-            ${["Business Rule", "Client Script", "Script Include", "Flow Designer", "UI Policy", "Scheduled Script", "Integration"].map(t => {
-                const checked = (data.code_types || []).includes(t);
-                return `<div style="font-size:12px; opacity:${checked ? 1 : 0.4}; font-weight:${checked ? 'bold' : 'normal'}">
+            ${["Business Rule", "Client Script", "Script Include", "Flow Designer", "UI Policy", "Scheduled Script", "Integration", "Email Script", "Data Policy", "UI Page", "Other"].map(t => {
+        const checked = (data.code_types || []).includes(t);
+        return `<div style="font-size:12px; opacity:${checked ? 1 : 0.4}; font-weight:${checked ? 'bold' : 'normal'}">
                     ${checked ? '☑' : '☐'} ${t}
                 </div>`;
-            }).join('')}
+    }).join('')}
         </div>
 
         <!-- 1. ENVIRONMENT DETAILS -->
         <div class="doc-section-title">1. Environment Details</div>
         <table class="doc-table">
             <tbody>
-                <tr><td class="th-navy" style="width:200px;">Environment(s)</td><td>${(data.environment?.envs || []).join(', ')}</td></tr>
-                <tr><td class="th-navy">Change Type</td><td>${escHtml(data.environment?.change_type)}</td></tr>
-                <tr><td class="th-navy">Update Set / Branch</td><td style="font-family:monospace; font-size:11px;">${escHtml(data.environment?.update_set)}</td></tr>
-                <tr><td class="th-navy">Deployment Target</td><td>${escHtml(data.environment?.deployment_target)}</td></tr>
+                <tr><td style="width:200px;">Environment(s)</td><td>${(data.environment?.envs || []).join(', ')}</td></tr>
+                <tr><td>Type</td><td>${escHtml(data.environment?.change_type)}</td></tr>
+                <tr><td>Update Set / Branch</td><td style="font-family:monospace; font-size:11px;">${escHtml(data.environment?.update_set)}</td></tr>
+                <tr><td>Deployment Target</td><td>${escHtml(data.environment?.deployment_target)}</td></tr>
             </tbody>
         </table>
 
@@ -364,7 +358,7 @@ function renderCodeReviewPreview(data) {
         <div class="doc-section-title">4. Code Section</div>
         ${(data.code_sections || []).map((section, i) => `
             <div style="margin-bottom:25px;">
-                <div style="font-weight:bold; color:#1e293b; margin-bottom:5px;">4.${i+1} ${escHtml(section.title)}</div>
+                <div style="font-weight:bold; color:#1e293b; margin-bottom:5px;">4.${i + 1} ${escHtml(section.title)}</div>
                 <pre style="background:#f1f5f9; border-left:4px solid #1e293b; padding:15px; font-size:11px; color:#1e293b; overflow-x:auto;">${escHtml(section.snippet)}</pre>
                 <div style="font-size:12px; color:#64748b; font-style:italic;">${escHtml(section.explanation)}</div>
             </div>
@@ -381,12 +375,12 @@ function renderCodeReviewPreview(data) {
         <!-- 6. TESTING VALIDATION -->
         <div class="doc-section-title">6. Testing Validation</div>
         <table class="doc-table">
-            <thead><tr><th>Scenario</th><th style="width:100px;">Result</th></tr></thead>
+            <thead><tr><th class="th-navy">Scenario</th><th class="th-navy" style="width:100px;">Result</th></tr></thead>
             <tbody>
                 ${(data.testing?.scenarios || []).map(s => `
                     <tr>
                         <td>${escHtml(s.case)}</td>
-                        <td style="text-align:center;">
+                        <td style="text-align:left;">
                             <span style="background:${s.result === 'Pass' ? '#dcfce7' : '#fee2e2'}; color:${s.result === 'Pass' ? '#166534' : '#991b1b'}; padding:2px 8px; border-radius:10px; font-weight:bold; font-size:10px;">
                                 ${escHtml(s.result.toUpperCase())}
                             </span>
@@ -400,7 +394,7 @@ function renderCodeReviewPreview(data) {
         <!-- 8. APPROVAL SECTION -->
         <div class="doc-section-title">8. Approval Section</div>
         <table class="doc-table">
-            <thead><tr><th>Role</th><th>Name</th><th>Status</th><th>Date</th></tr></thead>
+                    <thead><tr><th class="th-navy">Role</th><th class="th-navy">Name</th><th class="th-navy">Status</th><th class="th-navy">Date</th></tr></thead>
             <tbody>
                 ${(data.approvals || []).map(a => `
                     <tr><td><strong>${escHtml(a.role)}</strong></td><td>${escHtml(a.name)}</td><td>${escHtml(a.status)}</td><td>${escHtml(a.date)}</td></tr>
@@ -408,14 +402,18 @@ function renderCodeReviewPreview(data) {
             </tbody>
         </table>
 
-        <!-- 9. FINAL DECISION -->
-        <div class="doc-section-title">9. Final Decision</div>
-        <div style="background:#f8fafc; padding:20px; border-radius:8px; border:1px solid #e2e8f0; text-align:center;">
-            <div style="font-size:1.4em; font-weight:bold; color:#1e293b; margin-bottom:10px;">${escHtml(data.final_decision)}</div>
-            <div style="font-size:12px; color:#64748b;">Reviewer: ${escHtml(data.signature_name)} | Date: ${escHtml(data.signature_date)}</div>
-        </div>
+<!-- 9. FINAL DECISION -->
+    <div class="doc-section-title">9. Final Decision</div>
+    <div>
+        <!-- Call the function to generate the dynamic content -->
+        ${renderFinalDecision(data)}
 
-        <div style="margin-top:60px; padding-top:20px; border-top:1px solid #e2e8f0; text-align:center; font-size:10px; color:#94a3b8;">
+        <!-- The signature line remains the same for all cases -->
+        <div style="font-size:12px; color:#64748b; margin-top: 10px;">
+            Reviewer(s): ${escHtml(data.signature_name)} | Date: ${escHtml(data.signature_date)}
+        </div>
+    </div>
+        <div style="margin-top:30px; padding-top:20px; border-top:1px solid #e2e8f0; text-align:center; font-size:10px; color:#94a3b8;">
             CONFIDENTIAL CODE REVIEW SUMMARY | GENERATED ON ${new Date().toLocaleDateString()}
         </div>
     `;
