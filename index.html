@@ -30,36 +30,8 @@
                 <div>
                     <div>
                         <div class="section-label">Document Type</div>
-                        <div class="mode-tabs" style="grid-template-columns:repeat(2,1fr);gap:3px;">
-                            <button class="mode-tab active" data-mode="callscript" onclick="switchMode('callscript')"
-                                title="Call Script">⚙ Call Script</button>
-                            <button class="mode-tab" data-mode="report" onclick="switchMode('report')"
-                                title="Status Report">⚙ Status Report</button>
-                            <button class="mode-tab" data-mode="rca" onclick="switchMode('rca')"
-                                title="Root Cause Analysis">⚙ RCA</button>
-                            <button class="mode-tab" data-mode="blocker" onclick="switchMode('blocker')"
-                                title="Blocker Brief">⚙ Blocker Brief</button>
-                            <button class="mode-tab" data-mode="techapproach" onclick="switchMode('techapproach')"
-                                title="Technical Approach">⚙ Tech Approach</button>
-                            <button class="mode-tab" data-mode="taskbrief" onclick="switchMode('taskbrief')"
-                                title="Task Brief">⚙ Task Brief</button>
-                            <button class="mode-tab" data-mode="projectsummary" onclick="switchMode('projectsummary')"
-                                title="Project Summary">⚙ Project Summary</button>
-                            <button class="mode-tab" data-mode="deploymentrunbook"
-                                onclick="switchMode('deploymentrunbook')" title="Deployment Runbook">⚙ Deployment
-                                Runbook</button>
-                            <button class="mode-tab" data-mode="incidentsummary" onclick="switchMode('incidentsummary')"
-                                title="Incident Summary">⚙ Incident Summary</button>
-                            <button class="mode-tab" data-mode="signoff" onclick="switchMode('signoff')"
-                                title="Sign-Off Request">⚙ Sign-Off Request</button>
-                            <button class="mode-tab" data-mode="bulkapproval" onclick="switchMode('bulkapproval')"
-                                title="Bulk Approval">⚙ Bulk Approval</button>
-                            <button class="mode-tab" data-mode="devhandover" onclick="switchMode('devhandover')"
-                                title="Developer Handover">⚙ Developer Handover</button>
-                            <button class="mode-tab" data-mode="kbarticle" onclick="switchMode('kbarticle')"
-                                title="Knowledge Base Article">⚙ KB Article</button>
-                            <button class="mode-tab" data-mode="techdoc" onclick="switchMode('techdoc')"
-                                title="Technical Document">⚙ Tech Doc</button>
+                        <div id="mode-tabs-container" class="mode-tabs">
+                            <!-- Buttons will be dynamically inserted here -->
                         </div>
 
                         <div style="margin-top: 16px; display: none;">
@@ -184,11 +156,11 @@
     <script src="./core/constantFunctions.js"></script>
     <script src="./core/uiFunctions.js"></script>
     <script src="./core/OOB_main.js"></script>
-    <script src="./core/OOB_template.js"></script>
-    <script src="./utils/json.js"></script>
-    <script src="./utils/helper.js"></script>
-    <script src="./utils/template.js"></script>
     <script src="./utils/main.js"></script>
+    <script src="./core/OOB_template.js"></script>
+    <script src="./utils/template.js"></script>
+    <script src="./utils/json.js"></script>
+    <script src="./utils/modes.config.js"></script>
 </body>
 
 </html>

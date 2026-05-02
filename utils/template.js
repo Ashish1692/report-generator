@@ -104,37 +104,6 @@ async function generateDeploymentRunbook(data) {
     return { blob, filename: (data.project_name || 'Ops').replace(/\s+/g, '_') + '_Runbook.docx' };
 }
 
-// // ========================================
-// // list rendering helper for Requirements section (handles nested lists with formatting)
-// // ========================================
-function renderNestedList(items, Paragraph, TextRun, C, level = 0) {
-    let nodes = [];
-    items.forEach(item => {
-        const isObj = typeof item === 'object' && item !== null;
-        const text = isObj ? item.text : item;
-
-        nodes.push(new Paragraph({
-            bullet: { level: level },
-            spacing: { before: 60, after: 60 },
-            children: [
-                new TextRun({
-                    text: text,
-                    bold: isObj && item.bold,
-                    italics: isObj && item.italic,
-                    color: isObj && item.url ? '2563EB' : C.GRAY,
-                    underline: isObj && item.url ? {} : null,
-                    size: 19
-                })
-            ]
-        }));
-
-        if (isObj && item.sub_items && Array.isArray(item.sub_items)) {
-            nodes = nodes.concat(renderNestedList(item.sub_items, Paragraph, TextRun, C, level + 1));
-        }
-    });
-    return nodes;
-}
-// End
 async function generateSignOffRequest(data) {
     const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, BorderStyle, WidthType, ShadingType } = getDocx();
     const C = docxColors(); const FONT = 'Arial'; const CW = 9360;
@@ -275,7 +244,6 @@ async function generateBulkApprovalRequest(data) {
     const blob = await Packer.toBlob(doc);
     return { blob, filename: 'Bulk_Approval_' + data.project_name.replace(/\s/g, '_') + '.docx' };
 }
-
 
 async function generateProjectSummary(data) {
     const {

@@ -95,27 +95,131 @@ function switchMode(mode) {
     currentMode = mode;
     document.querySelectorAll('.mode-tab').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
     const hints = {
-        report: 'Status Report JSON',
-        callscript: 'Call Script JSON',
-        rca: 'RCA JSON',
-        blocker: 'Blocker Brief JSON',
-        techapproach: 'Technical Approach JSON',
-        taskbrief: 'Task Brief JSON',
-        projectsummary: 'Project Summary JSON'
+        callscript: "Call Script",
+        report: "Status Report",
+        rca: "RCA",
+        blocker: "Blocker Brief",
+        techapproach: "Tech Approach Document",
+        taskbrief: "Task Brief",
+        projectsummary: "Project Summary",
+        deploymentrunbook: "Deployment Runbook",
+        incidentsummary: "INC Resolution Summary",
+        signoff: "Single Task Approval",
+        bulkapproval: "Bulk Task Approval",
+        devhandover: "DEV Handover",
+        kbarticle: "KB Article",
+        techdoc: "Tech Spec Document"
     };
     document.getElementById('drop-sub').textContent = hints[mode] || 'Drop JSON file';
-    // Highlight matching gem link
-    document.querySelectorAll('.gem-link').forEach(a => {
-        var modes = (a.dataset.modes || '').split(',');
-        a.classList.toggle('active', modes.includes(mode));
-    });
     if (currentData) renderPreview(currentData);
     updateGenButton();
+}
+/**
+ * Updates the custom dropdown's display to reflect the currently selected mode.
+ *
+ * @param {string} modeId The ID of the mode to display (e.g., 'rca', 'callscript').
+ */
+function updateDropdownSelectionUI(modeId) {
+    const selectedMode = MODES_CONFIG.find(m => m.id === modeId);
+    const selectedDisplay = document.getElementById('selected-mode-display');
+
+    if (selectedMode && selectedDisplay) {
+        selectedDisplay.innerHTML = `${selectedMode.icon} ${selectedMode.displayName}`;
+        console.log(`Dropdown UI updated to: ${selectedMode.displayName}`);
+    } else {
+        console.warn(`Could not find a mode or display element for modeId: ${modeId}`);
+    }
 }
 
 function switchTab(tab) {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + tab));
+}
+
+// given a status string, return the appropriate badge HTML which help to download docx file.
+async function generate() {
+    if (!currentData) return;
+
+    try { getDocx(); } catch (e) {
+        document.getElementById('ban-err-txt').textContent = e.message;
+        document.getElementById('ban-err').classList.add('show');
+        return;
+    }
+
+    var btn = document.getElementById('btn-gen');
+    btn.classList.add('loading');
+    document.getElementById('ban-ok').classList.remove('show');
+    document.getElementById('ban-err').classList.remove('show');
+
+    try {
+        // Use the helper function here
+        var handler = getModeHandler(currentMode);
+
+        if (!handler) {
+            throw new Error("Unknown mode: " + currentMode);
+        }
+
+        var result = await handler.generate(currentData);
+
+        lastBlob = result.blob;
+        lastFilename = result.filename;
+        document.getElementById('ban-filename').textContent = result.filename + ' \u2014 ready to download';
+        document.getElementById('ban-ok').classList.add('show');
+        downloadNow();
+    } catch (err) {
+        document.getElementById('ban-err-txt').textContent = err.message;
+        document.getElementById('ban-err').classList.add('show');
+        console.error(err);
+    } finally {
+        btn.classList.remove('loading');
+    }
+}
+
+// Renders the preview panel based on the current mode and data
+function renderPreview(data) {
+    document.getElementById('preview-empty').style.display = 'none';
+    var el = document.getElementById('preview-content');
+    el.style.display = 'block';
+
+    // Use the helper function here
+    var handler = getModeHandler(currentMode);
+    if (handler) {
+        el.innerHTML = handler.render(data);
+    }
+}
+
+// load JSON data, render the preview, and auto-detect the mode based on the data structure
+function loadJSON(raw) {
+    const errEl = document.getElementById('json-err');
+    try {
+        const data = JSON.parse(raw);
+        errEl.style.display = 'none';
+        currentData = data;
+
+        document.getElementById('json-view').innerHTML =
+            '<pre style="white-space:pre-wrap;word-break:break-word;margin:0;">' + escHtml(JSON.stringify(data, null, 2)) + '</pre>';
+
+        document.getElementById('btn-copy-json').style.display = 'block';
+        const applyBtn = document.getElementById('btn-apply-json');
+        if (applyBtn) applyBtn.style.display = 'block';
+
+        // --- REFACTORED AUTO-DETECTION ---
+        // Find the first rule that returns true for this data
+        const match = AUTO_DETECTION_RULES.find(rule => rule.check(data));
+        if (match) {
+            updateDropdownSelectionUI(match.mode); // Update the dropdown UI to reflect the detected mode
+            switchMode(match.mode);
+        }
+        // ---------------------------------
+
+        document.getElementById('json-ta').value = JSON.stringify(data, null, 2);
+        renderPreview(data);
+        updateGenButton();
+        renderJsonView(data);
+    } catch (err) {
+        errEl.textContent = 'Invalid JSON: ' + err.message;
+        errEl.style.display = 'block';
+    }
 }
 
 // ════════════════════════════════════════════════════

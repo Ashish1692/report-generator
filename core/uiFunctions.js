@@ -56,7 +56,6 @@ async function copyJsonToClipboard() {
     }
 }
 
-
 function statusBadge(state) {
     var cls = 'status-other';
     var s = (state || '').toLowerCase();
@@ -102,23 +101,6 @@ function applyJsonEdits() {
     }
 }
 
-// Map internal keys to the names used in your AI Gem's Knowledge base
-const MODE_TO_TEMPLATE_NAME = {
-    callscript: "Call Script",
-    report: "Status Report",
-    rca: "RCA",
-    blocker: "Blocker Brief",
-    techapproach: "Technical Approach Document",
-    taskbrief: "Task Brief",
-    projectsummary: "Project Summary",
-    deploymentrunbook: "Deployment Runbook",
-    devhandover: "DEV Handover",
-    incidentsummary: "Incident Resolution Summary",
-    signoff: "Single Request Approval",
-    bulkapproval: "Bulk Approval Requests",
-    kbarticle: "KB Article",
-    techdoc: "Technical Document",
-};
 
 function openAiGem() {
     // 1. Get the friendly name based on currentMode
