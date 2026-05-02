@@ -306,6 +306,7 @@
   "notes": "[String] General administrative updates, active incident associations, or miscellaneous comments"
 }
 ```
+
 ### Project Summary
 ```json
 {
