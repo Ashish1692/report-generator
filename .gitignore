@@ -8,3 +8,7 @@ imp_points.mkd
 preview.mkd
 *.min.js
 /.vscode
+/obsolete
+improvements.md
+*_context.md
+*.log
